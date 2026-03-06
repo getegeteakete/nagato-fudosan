@@ -63,13 +63,13 @@ const Footer = () => {
             <h4 className="text-lg font-bold mb-6 text-white">物件を探す</h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/rental" className="text-gray-300 hover:text-green-400 transition-colors flex items-center group">
+                <Link to="/properties?type=rental" className="text-gray-300 hover:text-green-400 transition-colors flex items-center group">
                   <span className="w-1 h-1 bg-green-400 rounded-full mr-3 group-hover:bg-green-300"></span>
                   賃貸物件
                 </Link>
               </li>
               <li>
-                <Link to="/sale" className="text-gray-300 hover:text-green-400 transition-colors flex items-center group">
+                <Link to="/properties?type=sale" className="text-gray-300 hover:text-green-400 transition-colors flex items-center group">
                   <span className="w-1 h-1 bg-green-400 rounded-full mr-3 group-hover:bg-green-300"></span>
                   売買物件
                 </Link>
@@ -81,7 +81,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/properties/map" className="text-gray-300 hover:text-green-400 transition-colors flex items-center group">
+                <Link to="/properties" className="text-gray-300 hover:text-green-400 transition-colors flex items-center group">
                   <span className="w-1 h-1 bg-green-400 rounded-full mr-3 group-hover:bg-green-300"></span>
                   地図から探す
                 </Link>
@@ -154,11 +154,11 @@ const Footer = () => {
 
         <div className="pt-8 border-t border-gray-800 text-center">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-400">&copy; 2024 Premium Estate. All rights reserved.</p>
+            <p className="text-sm text-gray-400">&copy; 2024 (有)長門不動産. All rights reserved.</p>
             <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <span>不動産事業者免許: 東京都知事 (1) 12345号</span>
+              <span>山口県知事免許 不動産業</span>
               <span>|</span>
-              <span>宅地建物取引士: 田中太郎 (123456)</span>
+              <span>TEL: 0837-22-3321</span>
             </div>
           </div>
         </div>

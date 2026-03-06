@@ -43,7 +43,7 @@ const Navigation = () => {
                       <h4 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">賃貸物件</h4>
                       <ul className="space-y-3">
                         <li>
-                          <Link to="/rental/mansion" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
+                          <Link to="/properties?type=rental&subtype=mansion" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
                             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                               <Building2 className="h-5 w-5 text-blue-600" />
                             </div>
@@ -54,7 +54,7 @@ const Navigation = () => {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/rental/apartment" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
+                          <Link to="/properties?type=rental&subtype=apartment" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
                             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                               <Building2 className="h-5 w-5 text-green-600" />
                             </div>
@@ -65,7 +65,7 @@ const Navigation = () => {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/rental/house" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
+                          <Link to="/properties?type=rental&subtype=house" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
                             <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
                               <Building2 className="h-5 w-5 text-orange-600" />
                             </div>
@@ -81,7 +81,7 @@ const Navigation = () => {
                       <h4 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">売買物件</h4>
                       <ul className="space-y-3">
                         <li>
-                          <Link to="/sale/new" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
+                          <Link to="/properties?type=sale&subtype=new" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
                             <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
                               <Building2 className="h-5 w-5 text-purple-600" />
                             </div>
@@ -92,7 +92,7 @@ const Navigation = () => {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/sale/used" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
+                          <Link to="/properties?type=sale&subtype=used" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
                             <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
                               <Building2 className="h-5 w-5 text-indigo-600" />
                             </div>
@@ -103,7 +103,7 @@ const Navigation = () => {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/sale/land" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
+                          <Link to="/properties?type=sale&subtype=land" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
                             <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
                               <Building2 className="h-5 w-5 text-emerald-600" />
                             </div>
@@ -118,30 +118,22 @@ const Navigation = () => {
                     <div className="space-y-4">
                       <h4 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">注目物件</h4>
                       <div className="space-y-3">
-                        <div className="relative group cursor-pointer">
-                          <img 
-                            src="/src/assets/hero-building.jpg" 
-                            alt="高級マンション" 
-                            className="w-full h-24 object-cover rounded-lg"
-                          />
-                          <div className="absolute inset-0 bg-black/20 rounded-lg group-hover:bg-black/30 transition-colors"></div>
-                          <div className="absolute bottom-2 left-2 text-white">
-                            <p className="text-xs font-semibold">高級マンション</p>
-                            <p className="text-xs opacity-90">渋谷・恵比寿エリア</p>
+                        <Link to="/properties?type=rental" className="relative group block">
+                          <div className="w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                            <div className="text-center">
+                              <Building2 className="h-8 w-8 text-blue-500 mx-auto mb-1" />
+                              <p className="text-xs font-semibold text-blue-700">賃貸物件を見る</p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="relative group cursor-pointer">
-                          <img 
-                            src="/src/assets/hero-interior.jpg" 
-                            alt="新築戸建て" 
-                            className="w-full h-24 object-cover rounded-lg"
-                          />
-                          <div className="absolute inset-0 bg-black/20 rounded-lg group-hover:bg-black/30 transition-colors"></div>
-                          <div className="absolute bottom-2 left-2 text-white">
-                            <p className="text-xs font-semibold">新築戸建て</p>
-                            <p className="text-xs opacity-90">世田谷・目黒エリア</p>
+                        </Link>
+                        <Link to="/properties?type=sale" className="relative group block">
+                          <div className="w-full h-24 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                            <div className="text-center">
+                              <Building2 className="h-8 w-8 text-green-500 mx-auto mb-1" />
+                              <p className="text-xs font-semibold text-green-700">売買物件を見る</p>
+                            </div>
                           </div>
-                        </div>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -178,7 +170,7 @@ const Navigation = () => {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/valuation/visit" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                          <Link to="/valuation" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <div className="flex items-start space-x-3">
                               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                                 <Home className="h-5 w-5 text-green-600" />
@@ -196,7 +188,7 @@ const Navigation = () => {
                       <h4 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">サポート</h4>
                       <ul className="space-y-4">
                         <li>
-                          <Link to="/selling-guide" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                          <Link to="/valuation" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <div className="flex items-start space-x-3">
                               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                                 <FileText className="h-5 w-5 text-purple-600" />
@@ -263,7 +255,7 @@ const Navigation = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link to="/maintenance" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <Link to="/contact" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors" onClick={() => setIsOpen(false)}>
                           <div className="flex items-start space-x-3">
                             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                               <Home className="h-5 w-5 text-green-600" />

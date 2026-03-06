@@ -16,6 +16,8 @@ import Test from "./pages/Test";
 import PropertyDetails from "./pages/PropertyDetails";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import About from "./pages/About";
 import Layout from "./components/Layout";
 
@@ -41,6 +43,8 @@ const App = () => (
             <Route path="/faq" element={<Layout><FAQ /></Layout>} />
             <Route path="/contact" element={<Layout><Contact /></Layout>} />
             <Route path="/about" element={<Layout><About /></Layout>} />
+            <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+            <Route path="/terms" element={<Layout><Terms /></Layout>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
