@@ -71,7 +71,7 @@ const Terms = () => {
       </div>
 
       <div className="mt-12">
-        <Link to="/" className="text-blue-600 hover:text-blue-700 text-sm">← トップページへ戻る</Link>
+        <Link to="/" className="text-green-700 hover:text-green-800 text-sm">← トップページへ戻る</Link>
       </div>
     </div>
   );

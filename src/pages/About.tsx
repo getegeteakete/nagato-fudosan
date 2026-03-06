@@ -17,7 +17,7 @@ const About = () => {
       description: "長門市に根付いて48年。地域の特性を深く理解し、お客様に最適なサービスを提供します。"
     },
     {
-      icon: <Shield className="h-8 w-8 text-blue-500" />,
+      icon: <Shield className="h-8 w-8 text-green-600" />,
       title: "信頼と安心",
       description: "48年の実績と豊富な経験で、お客様に安心してお任せいただけるサービスを提供します。"
     },
@@ -27,7 +27,7 @@ const About = () => {
       description: "広告や営業など、無駄な費用を削減することであなたのためのサポートをします。"
     },
     {
-      icon: <Globe className="h-8 w-8 text-purple-500" />,
+      icon: <Globe className="h-8 w-8 text-green-600" />,
       title: "とことんサポート",
       description: "一生に一度の、納得のいく物件がみつかるまで、とことんおつき合いさせていただきます。"
     }
@@ -46,7 +46,9 @@ const About = () => {
     <div className="container py-16">
       {/* ヒーローセクション */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">会社案内</h1>
+        <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">ABOUT US</p>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">会社案内</h1>
+        <div className="w-16 h-1 bg-green-700 mx-auto mb-6 rounded-full"></div>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
           おかげさまで地元に根付いて48年。長門市の賃貸・物件・不動産売買・空き家管理・不動産管理はお任せください。
         </p>
@@ -114,7 +116,8 @@ const About = () => {
 
       {/* 実績・数値 */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">実績・数値</h2>
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">実績・数値</h2>
+        <div className="w-12 h-1 bg-green-700 mx-auto mb-12 rounded-full"></div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
             <Card key={index} className="text-center">

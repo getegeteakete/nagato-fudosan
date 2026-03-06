@@ -150,9 +150,11 @@ const FAQ = () => {
       <div className="container mx-auto px-4 py-12">
         {/* ヘッダー */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">FAQ</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">
             よくある質問
           </h1>
+          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             お客様からよくいただくご質問をまとめました。<br />
             お探しの情報が見つからない場合は、お気軽にお問い合わせください。
@@ -176,7 +178,7 @@ const FAQ = () => {
         <div className="space-y-8">
           {filteredCategories.map((category) => (
             <Card key={category.id} className="overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-green-50">
                 <CardTitle className="flex items-center gap-3 text-xl">
                   <span className="text-2xl">{category.icon}</span>
                   {category.title}
@@ -191,7 +193,7 @@ const FAQ = () => {
                     <AccordionItem key={item.id} value={item.id} className="border-b">
                       <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
                         <div className="flex items-center gap-3">
-                          <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                          <HelpCircle className="h-5 w-5 text-green-700 flex-shrink-0" />
                           <span className="font-medium">{item.question}</span>
                         </div>
                       </AccordionTrigger>
@@ -228,7 +230,7 @@ const FAQ = () => {
         )}
 
         {/* お問い合わせセクション */}
-        <Card className="mt-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <Card className="mt-12 bg-gradient-to-r from-green-800 to-green-700 text-white">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">
               お探しの情報が見つかりませんでしたか？
@@ -242,11 +244,11 @@ const FAQ = () => {
                 <Phone className="h-5 w-5" />
                 0837-22-3321
               </Button>
-              <Button variant="outline" size="lg" className="flex items-center gap-2 bg-white text-blue-600 hover:bg-gray-50">
+              <Button variant="outline" size="lg" className="flex items-center gap-2 bg-white text-green-700 hover:bg-gray-50">
                 <Mail className="h-5 w-5" />
                 メールで問い合わせ
               </Button>
-              <Button variant="outline" size="lg" className="flex items-center gap-2 bg-white text-blue-600 hover:bg-gray-50">
+              <Button variant="outline" size="lg" className="flex items-center gap-2 bg-white text-green-700 hover:bg-gray-50">
                 <MessageCircle className="h-5 w-5" />
                 オンラインチャット
               </Button>

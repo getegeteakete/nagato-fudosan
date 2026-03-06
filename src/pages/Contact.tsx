@@ -34,7 +34,9 @@ const Contact = () => {
     <div className="container py-16">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">お問い合わせ</h1>
+          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">CONTACT</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">お問い合わせ</h1>
+          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
           <p className="text-lg text-gray-600">
             ご質問やご相談がございましたら、お気軽にお問い合わせください。
           </p>
@@ -157,8 +159,8 @@ const Contact = () => {
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Mail className="h-5 w-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Mail className="h-5 w-5 text-green-700" />
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">メールアドレス</p>
@@ -180,8 +182,8 @@ const Contact = () => {
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-purple-600" />
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-green-700" />
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">営業時間</p>

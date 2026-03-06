@@ -73,7 +73,7 @@ const Register: React.FC = () => {
             または{' '}
             <Link
               to="/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-green-700 hover:text-green-600"
             >
               既存のアカウントでログイン
             </Link>
@@ -204,14 +204,14 @@ const Register: React.FC = () => {
                   <Label htmlFor="agreeToTerms" className="text-sm">
                     <Link
                       to="/terms"
-                      className="text-blue-600 hover:text-blue-500 underline"
+                      className="text-green-700 hover:text-green-600 underline"
                     >
                       利用規約
                     </Link>
                     および
                     <Link
                       to="/privacy"
-                      className="text-blue-600 hover:text-blue-500 underline ml-1"
+                      className="text-green-700 hover:text-green-600 underline ml-1"
                     >
                       プライバシーポリシー
                     </Link>

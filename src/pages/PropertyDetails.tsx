@@ -133,7 +133,7 @@ const PropertyDetails = () => {
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
                       className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 ${
-                        index === currentImageIndex ? 'border-blue-500' : 'border-gray-200'
+                        index === currentImageIndex ? 'border-green-600' : 'border-gray-200'
                       }`}
                     >
                       <img src={image} alt={`${index + 1}`} className="w-full h-full object-cover" />
@@ -178,8 +178,8 @@ const PropertyDetails = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* 価格情報 */}
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="text-3xl font-bold text-blue-600">
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="text-3xl font-bold text-green-700">
                     {formatPrice(property)}
                     {property.type === 'rent' && <span className="text-lg text-gray-600">/月</span>}
                   </div>
@@ -237,11 +237,11 @@ const PropertyDetails = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-2">
-                        <Train className="h-4 w-4 text-blue-600" />
+                        <Train className="h-4 w-4 text-green-700" />
                         <span className="font-medium">{property.station}</span>
                       </div>
                       {property.walkingTime && (
-                        <div className="text-blue-600 font-semibold">徒歩{property.walkingTime}分</div>
+                        <div className="text-green-700 font-semibold">徒歩{property.walkingTime}分</div>
                       )}
                     </div>
                   </div>
@@ -286,8 +286,8 @@ const PropertyDetails = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="h-6 w-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <User className="h-6 w-6 text-green-700" />
                   </div>
                   <div>
                     <div className="font-semibold">（有）長門不動産</div>
@@ -317,7 +317,7 @@ const PropertyDetails = () => {
                     href="https://3321.jp"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 text-sm flex items-center gap-1 hover:underline"
+                    className="text-green-700 text-sm flex items-center gap-1 hover:underline"
                   >
                     <ExternalLink className="h-4 w-4" />
                     公式サイトで詳細を見る
@@ -335,7 +335,7 @@ const PropertyDetails = () => {
                 <div className="space-y-3">
                   {PROPERTIES.filter((p) => p.id !== property.id && p.type === property.type).slice(0, 3).map((p) => (
                     <Link key={p.id} to={`/property/${p.id}`} className="block">
-                      <div className="p-3 border rounded-lg hover:border-blue-400 transition-colors">
+                      <div className="p-3 border rounded-lg hover:border-green-500 transition-colors">
                         <div className="text-sm font-medium">{p.title}</div>
                         <div className="text-xs text-gray-600">{formatPrice(p)}{p.type === 'rent' ? '/月' : ''}</div>
                         <div className="text-xs text-gray-400 mt-1">{p.address.replace('山口県', '')}</div>

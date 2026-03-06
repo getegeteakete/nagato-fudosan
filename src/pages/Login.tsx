@@ -57,7 +57,7 @@ const Login: React.FC = () => {
             または{' '}
             <Link
               to="/register"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-green-700 hover:text-green-600"
             >
               新規アカウントを作成
             </Link>
@@ -128,7 +128,7 @@ const Login: React.FC = () => {
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-green-700 focus:ring-green-500 border-gray-300 rounded"
                   />
                   <Label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                     ログイン状態を保持する
@@ -138,7 +138,7 @@ const Login: React.FC = () => {
                 <div className="text-sm">
                   <Link
                     to="/contact"
-                    className="font-medium text-blue-600 hover:text-blue-500"
+                    className="font-medium text-green-700 hover:text-green-600"
                   >
                     パスワードを忘れた方
                   </Link>

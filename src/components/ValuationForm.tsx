@@ -141,19 +141,19 @@ const ValuationForm: React.FC<ValuationFormProps> = ({ onSuccess }) => {
             <h3 className="font-semibold">今後の流れ</h3>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-semibold">1</div>
+                <div className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-semibold">1</div>
                 <span>担当者よりお電話にて詳細確認</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-semibold">2</div>
+                <div className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-semibold">2</div>
                 <span>現地調査の日程調整</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-semibold">3</div>
+                <div className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-semibold">3</div>
                 <span>現地調査実施</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-semibold">4</div>
+                <div className="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-xs font-semibold">4</div>
                 <span>査定結果のご報告</span>
               </div>
             </div>
@@ -187,13 +187,13 @@ const ValuationForm: React.FC<ValuationFormProps> = ({ onSuccess }) => {
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                  step <= currentStep ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
+                  step <= currentStep ? 'bg-green-700 text-white' : 'bg-gray-200 text-gray-600'
                 }`}>
                   {step}
                 </div>
                 {step < 3 && (
                   <div className={`w-12 h-1 mx-2 ${
-                    step < currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                    step < currentStep ? 'bg-green-700' : 'bg-gray-200'
                   }`} />
                 )}
               </div>

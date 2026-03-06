@@ -30,7 +30,7 @@ const FeaturedProperties = () => {
     if (property.isNew) badges.push({ label: "NEW", color: "bg-green-600 text-white" });
     badges.push({
       label: getTransactionTypeLabel(property.type),
-      color: property.type === "rent" ? "bg-purple-600 text-white" : "bg-orange-600 text-white",
+      color: property.type === "rent" ? "bg-green-700 text-white" : "bg-orange-600 text-white",
     });
     badges.push({
       label: getPropertyTypeLabel(property.propertyType),
@@ -47,9 +47,11 @@ const FeaturedProperties = () => {
     <section className="py-20 bg-gradient-to-b from-background to-secondary/20">
       <div className="container">
         <div className="text-center mb-10 animate-fade-in">
-          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-4">
+          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">PROPERTIES</p>
+          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-4 text-gray-900">
             おすすめ物件
           </h2>
+          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
           <p className="text-muted-foreground text-lg">
             長門市の最新・注目物件をご紹介
           </p>
@@ -62,7 +64,7 @@ const FeaturedProperties = () => {
               onClick={() => setActiveTab("rental")}
               className={`px-6 py-2.5 rounded-md text-sm font-semibold transition-all ${
                 activeTab === "rental"
-                  ? "bg-purple-600 text-white shadow-sm"
+                  ? "bg-green-700 text-white shadow-sm"
                   : "text-gray-600 hover:text-gray-900"
               }`}
             >

@@ -24,37 +24,37 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
 
-    --primary: 38 35% 60%;
-    --primary-foreground: 215 25% 7%;
+    --primary: 145 40% 30%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 145 15% 95%;
+    --secondary-foreground: 145 40% 20%;
 
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 38 35% 60%;
-    --accent-foreground: 215 25% 7%;
+    --accent: 145 40% 30%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 38 35% 60%;
+    --ring: 145 40% 30%;
 
     --radius: 1rem;
 
-    /* Custom luxury tokens */
-    --gold: 38 35% 60%;
-    --gold-muted: 38 20% 45%;
+    /* Custom green tokens */
+    --gold: 145 40% 30%;
+    --gold-muted: 145 30% 40%;
     --dark-bg: 0 0% 100%;
     --dark-surface: 0 0% 100%;
     --dark-border: 0 0% 90%;
     
     /* Gradients */
-    --gradient-gold: linear-gradient(135deg, hsl(38 35% 60% / 0.2), hsl(38 35% 60% / 0.05));
-    --gradient-dark: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-gold: linear-gradient(135deg, hsl(145 40% 30% / 0.12), hsl(145 40% 30% / 0.04));
+    --gradient-dark: linear-gradient(180deg, hsl(0 0% 100%), hsl(145 15% 98%));
     
     /* Shadows */
     --shadow-premium: 0 10px 40px -10px hsl(0 0% 0% / 0.1);

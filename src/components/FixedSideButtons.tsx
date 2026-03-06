@@ -9,7 +9,7 @@ const FixedSideButtons = () => {
         <div className="flex flex-col space-y-1">
           {/* 物件を探す */}
           <Link to="/properties" className="group">
-            <div className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center w-16 h-32 border-l-4 border-blue-500 hover:border-blue-400">
+            <div className="bg-green-700 hover:bg-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center w-16 h-32 border-l-4 border-green-600 hover:border-green-500">
               <div className="writing-mode-vertical text-center">
                 <Building2 className="h-6 w-6 mx-auto mb-2" />
                 <span className="text-sm font-bold tracking-wider">物件を探す</span>
@@ -44,7 +44,7 @@ const FixedSideButtons = () => {
         <div className="flex justify-around items-center py-2 px-4">
           {/* 物件を探す */}
           <Link to="/properties" className="flex flex-col items-center justify-center py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-            <Building2 className="h-6 w-6 text-blue-600 mb-1" />
+            <Building2 className="h-6 w-6 text-green-700 mb-1" />
             <span className="text-xs font-medium text-gray-700">物件を探す</span>
           </Link>
 

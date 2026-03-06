@@ -23,11 +23,13 @@ const CompanyHighlights = () => {
     <section className="py-20 bg-gradient-to-b from-background to-secondary/10">
       <div className="container">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-4">
-            長門市の魅力
+          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">WHY CHOOSE US</p>
+          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-4 text-gray-900">
+            安心と信頼の理由
           </h2>
+          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            美しい自然と歴史ある街並みの中で、理想の住まいを見つけませんか
+            地元・長門市に根付いて48年。お客様から選ばれ続ける理由があります
           </p>
         </div>
 

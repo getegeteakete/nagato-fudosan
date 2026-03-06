@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
-                <Search className="h-8 w-8 text-blue-500" />
+                <Search className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">保存された検索</p>
                   <p className="text-2xl font-bold text-gray-900">

@@ -132,7 +132,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
       <CardContent className="p-2.5 sm:p-4">
         <div className="space-y-1.5 sm:space-y-2">
-          <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-green-700 transition-colors">
             {property.title}
           </h3>
           
@@ -149,7 +149,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           )}
 
           <div className="flex items-center justify-between">
-            <div className="text-base sm:text-2xl font-bold text-blue-600">
+            <div className="text-base sm:text-2xl font-bold text-green-700">
               {formatPrice(property.type === 'rent' ? property.rent || 0 : property.price, property.type)}
             </div>
             <div className="text-xs sm:text-sm text-gray-600">

@@ -44,11 +44,11 @@ const Navigation = () => {
                       <ul className="space-y-3">
                         <li>
                           <Link to="/properties?type=rental&subtype=mansion" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                              <Building2 className="h-5 w-5 text-blue-600" />
+                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                              <Building2 className="h-5 w-5 text-green-700" />
                             </div>
                             <div>
-                              <span className="text-sm font-semibold group-hover:text-blue-600 transition-colors">マンション</span>
+                              <span className="text-sm font-semibold group-hover:text-green-700 transition-colors">マンション</span>
                               <p className="text-xs text-gray-500 mt-0.5">高品質な賃貸物件</p>
                             </div>
                           </Link>
@@ -82,22 +82,22 @@ const Navigation = () => {
                       <ul className="space-y-3">
                         <li>
                           <Link to="/properties?type=sale&subtype=new" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
-                            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                              <Building2 className="h-5 w-5 text-purple-600" />
+                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                              <Building2 className="h-5 w-5 text-green-700" />
                             </div>
                             <div>
-                              <span className="text-sm font-semibold group-hover:text-purple-600 transition-colors">新築</span>
+                              <span className="text-sm font-semibold group-hover:text-green-700 transition-colors">新築</span>
                               <p className="text-xs text-gray-500 mt-0.5">新築マンション・戸建て</p>
                             </div>
                           </Link>
                         </li>
                         <li>
                           <Link to="/properties?type=sale&subtype=used" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group border border-transparent hover:border-gray-200">
-                            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
-                              <Building2 className="h-5 w-5 text-indigo-600" />
+                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                              <Building2 className="h-5 w-5 text-green-700" />
                             </div>
                             <div>
-                              <span className="text-sm font-semibold group-hover:text-indigo-600 transition-colors">中古</span>
+                              <span className="text-sm font-semibold group-hover:text-green-700 transition-colors">中古</span>
                               <p className="text-xs text-gray-500 mt-0.5">中古マンション・戸建て</p>
                             </div>
                           </Link>
@@ -119,9 +119,9 @@ const Navigation = () => {
                       <h4 className="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2">注目物件</h4>
                       <div className="space-y-3">
                         <Link to="/properties?type=rental" className="relative group block">
-                          <div className="w-full h-24 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                          <div className="w-full h-24 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                             <div className="text-center">
-                              <Building2 className="h-8 w-8 text-blue-500 mx-auto mb-1" />
+                              <Building2 className="h-8 w-8 text-green-600 mx-auto mb-1" />
                               <p className="text-xs font-semibold text-blue-700">賃貸物件を見る</p>
                             </div>
                           </div>
@@ -138,7 +138,7 @@ const Navigation = () => {
                     </div>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
-                    <Link to="/properties" className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                    <Link to="/properties" className="inline-flex items-center space-x-2 text-sm font-medium text-green-700 hover:text-green-800 transition-colors">
                       <span>すべての物件を見る</span>
                       <ChevronDown className="h-4 w-4 rotate-[-90deg]" />
                     </Link>
@@ -159,11 +159,11 @@ const Navigation = () => {
                         <li>
                           <Link to="/valuation" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <div className="flex items-start space-x-3">
-                              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <Calculator className="h-5 w-5 text-blue-600" />
+                              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <Calculator className="h-5 w-5 text-green-700" />
                               </div>
                               <div>
-                                <h5 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">オンライン査定</h5>
+                                <h5 className="font-semibold text-gray-900 group-hover:text-green-700 transition-colors">オンライン査定</h5>
                                 <p className="text-sm text-gray-600 mt-1">簡単な情報入力で査定額を算出</p>
                               </div>
                             </div>
@@ -190,11 +190,11 @@ const Navigation = () => {
                         <li>
                           <Link to="/valuation" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
                             <div className="flex items-start space-x-3">
-                              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <FileText className="h-5 w-5 text-purple-600" />
+                              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <FileText className="h-5 w-5 text-green-700" />
                               </div>
                               <div>
-                                <h5 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">売却の流れ</h5>
+                                <h5 className="font-semibold text-gray-900 group-hover:text-green-700 transition-colors">売却の流れ</h5>
                                 <p className="text-sm text-gray-600 mt-1">ステップバイステップで解説</p>
                               </div>
                             </div>
@@ -244,11 +244,11 @@ const Navigation = () => {
                       <li>
                         <Link to="/faq" className="block group p-3 rounded-lg hover:bg-gray-50 transition-colors">
                           <div className="flex items-start space-x-3">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <User className="h-5 w-5 text-blue-600" />
+                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                              <User className="h-5 w-5 text-green-700" />
                             </div>
                             <div>
-                              <h5 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">よくある質問</h5>
+                              <h5 className="font-semibold text-gray-900 group-hover:text-green-700 transition-colors">よくある質問</h5>
                               <p className="text-sm text-gray-600 mt-1">お困りごとはこちら</p>
                             </div>
                           </div>
@@ -346,7 +346,7 @@ const Navigation = () => {
                 <div className="space-y-2">
                   <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider px-3">物件を探す</h3>
                   <Link to="/properties" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors" onClick={() => setIsOpen(false)}>
-                    <Building2 className="h-5 w-5 text-blue-600" />
+                    <Building2 className="h-5 w-5 text-green-700" />
                     <span className="font-medium">物件検索</span>
                   </Link>
                   <Link to="/properties?type=rental" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors" onClick={() => setIsOpen(false)}>
@@ -354,7 +354,7 @@ const Navigation = () => {
                     <span className="font-medium">賃貸物件</span>
                   </Link>
                   <Link to="/properties?type=sale" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors" onClick={() => setIsOpen(false)}>
-                    <Calculator className="h-5 w-5 text-purple-600" />
+                    <Calculator className="h-5 w-5 text-green-700" />
                     <span className="font-medium">売買物件</span>
                   </Link>
                 </div>
@@ -380,7 +380,7 @@ const Navigation = () => {
                     <span className="font-medium">退去申請</span>
                   </Link>
                   <Link to="/faq" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors" onClick={() => setIsOpen(false)}>
-                    <User className="h-5 w-5 text-blue-600" />
+                    <User className="h-5 w-5 text-green-700" />
                     <span className="font-medium">よくある質問</span>
                   </Link>
                 </div>
