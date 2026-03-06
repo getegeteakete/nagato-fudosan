@@ -326,8 +326,8 @@ const Navigation = () => {
         {/* Mobile Menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild className="lg:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
+            <Button variant="ghost" size="icon" className="text-white hover:bg-green-700 h-11 w-11">
+              <Menu className="h-8 w-8 text-white" strokeWidth={2.5} />
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-[320px] sm:w-[400px] overflow-y-auto">
