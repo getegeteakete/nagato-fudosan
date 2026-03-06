@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { PropertyCard } from '@/components/PropertyCard';
+import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   User, 
@@ -24,6 +25,7 @@ import { Link } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const { favorites, isLoading: favoritesLoading } = useFavorites();
   const { savedSearches, isLoading: searchesLoading } = useSavedSearches();
   const [activeTab, setActiveTab] = useState('overview');
@@ -68,9 +70,9 @@ const Dashboard: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => navigate('/contact')}>
                 <Settings className="h-4 w-4 mr-2" />
-                設定
+                設定・お問い合わせ
               </Button>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />

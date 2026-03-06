@@ -70,15 +70,26 @@ const MoveoutForm: React.FC<MoveoutFormProps> = ({ onSuccess }) => {
   const onSubmit = async (data: MoveoutFormData) => {
     setIsSubmitting(true);
     try {
-      const response = await apiClient.submitMoveoutRequest({
-        ...data,
-        status: 'pending',
-      });
+      const subject = `【退去申請】${data.tenantName} 様`;
+      const body = `■ 入居者情報
+お名前：${data.tenantName}
+メール：${data.email}
+電話：${data.phone}
 
-      if (response.success && response.data) {
-        setSubmittedRequest(response.data);
-        onSuccess?.(response.data);
-      }
+■ 物件情報
+物件ID：${data.propertyId}
+部屋番号：${data.roomNumber}
+退去予定日：${data.moveoutDate ? new Date(data.moveoutDate).toLocaleDateString('ja-JP') : ''}
+
+■ 退去理由
+${data.reason || 'なし'}
+
+■ その他ご要望
+${data.notes || 'なし'}
+`;
+      window.location.href = `mailto:nag3321@sage.ocn.ne.jp?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      setSubmittedRequest({ id: 'submitted', ...data } as any);
+      onSuccess?.({ id: 'submitted', ...data } as any);
     } catch (error) {
       console.error('Error submitting moveout request:', error);
     } finally {

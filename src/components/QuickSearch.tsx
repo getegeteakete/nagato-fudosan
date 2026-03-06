@@ -1,261 +1,202 @@
 import { useState } from "react";
 import { Search, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 
+const AREAS = [
+  { value: "all", label: "長門市全域" },
+  { value: "東深川", label: "東深川" },
+  { value: "西深川", label: "西深川" },
+  { value: "仙崎", label: "仙崎" },
+  { value: "三隅", label: "三隅" },
+  { value: "日置", label: "日置" },
+  { value: "油谷", label: "油谷" },
+  { value: "俵山", label: "俵山" },
+  { value: "深川湯本", label: "深川湯本" },
+];
+
+const RENTAL_PRICES = [
+  { value: "30000", label: "3万円以下" },
+  { value: "40000", label: "4万円以下" },
+  { value: "50000", label: "5万円以下" },
+  { value: "60000", label: "6万円以下" },
+  { value: "70000", label: "7万円以下" },
+  { value: "100000", label: "10万円以下" },
+];
+
+const SALE_PRICES = [
+  { value: "3000000", label: "300万円以下" },
+  { value: "5000000", label: "500万円以下" },
+  { value: "8000000", label: "800万円以下" },
+  { value: "10000000", label: "1000万円以下" },
+  { value: "15000000", label: "1500万円以下" },
+  { value: "20000000", label: "2000万円以下" },
+  { value: "30000000", label: "3000万円以下" },
+];
+
+const PROPERTY_TYPES_RENTAL = [
+  { value: "apartment", label: "マンション" },
+  { value: "house", label: "戸建て" },
+];
+const PROPERTY_TYPES_SALE = [
+  { value: "house", label: "戸建て" },
+  { value: "land", label: "土地" },
+  { value: "apartment", label: "マンション" },
+];
+
+const AGES = [
+  { value: "5", label: "築5年以内" },
+  { value: "10", label: "築10年以内" },
+  { value: "20", label: "築20年以内" },
+  { value: "30", label: "築30年以内" },
+];
+
 const QuickSearch = () => {
-  const [searchType, setSearchType] = useState("rental");
+  const navigate = useNavigate();
+  const [rental, setRental] = useState({ area: "", price: "", type: "" });
+  const [sale, setSale] = useState({ area: "", price: "", type: "", age: "" });
+
+  const handleRentalSearch = () => {
+    const params = new URLSearchParams();
+    params.set("type", "rental");
+    if (rental.area && rental.area !== "all") params.set("area", rental.area);
+    if (rental.price) params.set("maxPrice", rental.price);
+    if (rental.type) params.set("propertyType", rental.type);
+    navigate(`/properties?${params.toString()}`);
+  };
+
+  const handleSaleSearch = () => {
+    const params = new URLSearchParams();
+    params.set("type", "sale");
+    if (sale.area && sale.area !== "all") params.set("area", sale.area);
+    if (sale.price) params.set("maxPrice", sale.price);
+    if (sale.type) params.set("propertyType", sale.type);
+    if (sale.age) params.set("maxAge", sale.age);
+    navigate(`/properties?${params.toString()}`);
+  };
+
+  const SearchRow = ({ fields }: { fields: React.ReactNode[] }) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      {fields}
+    </div>
+  );
 
   return (
     <section className="py-12 bg-card/30 backdrop-blur-sm">
       <div className="container">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-serif font-semibold text-center mb-8">
-            物件をクイック検索
-          </h2>
+          <div className="text-center mb-8">
+            <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-1">QUICK SEARCH</p>
+            <h2 className="text-2xl md:text-3xl font-serif font-semibold">物件をクイック検索</h2>
+            <div className="w-12 h-1 bg-green-700 mx-auto mt-3 rounded-full"></div>
+          </div>
 
-          <Tabs defaultValue="rental" className="w-full" onValueChange={setSearchType}>
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+          <Tabs defaultValue="rental" className="w-full">
+            <TabsList className="grid w-full max-w-xs mx-auto grid-cols-2 mb-6">
               <TabsTrigger value="rental">賃貸</TabsTrigger>
               <TabsTrigger value="sale">売買</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="rental" className="space-y-6">
-              <div className="bg-card rounded-2xl p-6 md:p-8 shadow-premium">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">エリア</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="選択してください" />
-                      </SelectTrigger>
+            {/* 賃貸 */}
+            <TabsContent value="rental">
+              <div className="bg-card rounded-2xl p-5 md:p-7 shadow-premium">
+                <SearchRow fields={[
+                  <div key="area">
+                    <label className="block text-sm font-medium mb-1.5">エリア</label>
+                    <Select value={rental.area} onValueChange={v => setRental(r => ({ ...r, area: v }))}>
+                      <SelectTrigger><SelectValue placeholder="長門市全域" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="nagato">長門市全域</SelectItem>
-                        <SelectItem value="higashifukawa">東深川</SelectItem>
-                        <SelectItem value="nishifukawa">西深川</SelectItem>
-                        <SelectItem value="seimei">正明市</SelectItem>
-                        <SelectItem value="tawarayama">俵山</SelectItem>
-                        <SelectItem value="senzaki">仙崎</SelectItem>
+                        {AREAS.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">沿線・駅</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="選択してください" />
-                      </SelectTrigger>
+                  </div>,
+                  <div key="price">
+                    <label className="block text-sm font-medium mb-1.5">賃料（上限）</label>
+                    <Select value={rental.price} onValueChange={v => setRental(r => ({ ...r, price: v }))}>
+                      <SelectTrigger><SelectValue placeholder="指定なし" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="nagato">長門市駅</SelectItem>
-                        <SelectItem value="senzaki">仙崎駅</SelectItem>
-                        <SelectItem value="nagatoyumoto">長門湯本駅</SelectItem>
-                        <SelectItem value="itamochi">板持駅</SelectItem>
-                        <SelectItem value="misumi">三隅駅</SelectItem>
-                        <SelectItem value="hitomaru">人丸駅</SelectItem>
-                        <SelectItem value="furuyama">古市駅</SelectItem>
+                        {RENTAL_PRICES.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">賃料</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="指定なし" />
-                      </SelectTrigger>
+                  </div>,
+                  <div key="type">
+                    <label className="block text-sm font-medium mb-1.5">物件種別</label>
+                    <Select value={rental.type} onValueChange={v => setRental(r => ({ ...r, type: v }))}>
+                      <SelectTrigger><SelectValue placeholder="指定なし" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="3">3万円以下</SelectItem>
-                        <SelectItem value="4">4万円以下</SelectItem>
-                        <SelectItem value="5">5万円以下</SelectItem>
-                        <SelectItem value="6">6万円以下</SelectItem>
-                        <SelectItem value="7">7万円以下</SelectItem>
-                        <SelectItem value="10">10万円以下</SelectItem>
+                        {PROPERTY_TYPES_RENTAL.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">間取り</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="指定なし" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1ldk">1LDK</SelectItem>
-                        <SelectItem value="2dk">2DK</SelectItem>
-                        <SelectItem value="3dk">3DK</SelectItem>
-                        <SelectItem value="4dk">4DK</SelectItem>
-                        <SelectItem value="4ldk">4LDK</SelectItem>
-                        <SelectItem value="5dk">5DK</SelectItem>
-                        <SelectItem value="6k">6K</SelectItem>
-                        <SelectItem value="6dk">6DK</SelectItem>
-                        <SelectItem value="6ldk">6LDK</SelectItem>
-                        <SelectItem value="8dk">8DK</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">物件種別</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="指定なし" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="mansion">マンション</SelectItem>
-                        <SelectItem value="apartment">アパート</SelectItem>
-                        <SelectItem value="house">一戸建</SelectItem>
-                        <SelectItem value="dormitory">社宅・寮</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
+                  </div>,
+                  <div key="spacer" className="hidden md:block" />,
+                ]} />
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link to="/properties" className="flex-1">
-                    <Button variant="premium" size="lg" className="w-full group">
-                      <Search className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                      この条件で探す
-                    </Button>
-                  </Link>
-                  <Link to="/properties">
-                    <Button variant="outline" size="lg" className="group">
-                      <Settings className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform" />
-                      詳細条件を設定
-                    </Button>
-                  </Link>
+                  <Button onClick={handleRentalSearch} size="lg" className="flex-1 bg-green-700 hover:bg-green-800 group">
+                    <Search className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                    この条件で賃貸を探す
+                  </Button>
+                  <Button onClick={() => navigate("/properties?type=rental")} variant="outline" size="lg" className="border-green-600 text-green-700 hover:bg-green-50">
+                    <Settings className="mr-2 h-5 w-5" />
+                    詳細条件で絞り込む
+                  </Button>
                 </div>
               </div>
             </TabsContent>
 
-            <TabsContent value="sale" className="space-y-6">
-              <div className="bg-card rounded-2xl p-6 md:p-8 shadow-premium">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">エリア</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="選択してください" />
-                      </SelectTrigger>
+            {/* 売買 */}
+            <TabsContent value="sale">
+              <div className="bg-card rounded-2xl p-5 md:p-7 shadow-premium">
+                <SearchRow fields={[
+                  <div key="area">
+                    <label className="block text-sm font-medium mb-1.5">エリア</label>
+                    <Select value={sale.area} onValueChange={v => setSale(s => ({ ...s, area: v }))}>
+                      <SelectTrigger><SelectValue placeholder="長門市全域" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="nagato">長門市全域</SelectItem>
-                        <SelectItem value="higashifukawa">東深川</SelectItem>
-                        <SelectItem value="nishifukawa">西深川</SelectItem>
-                        <SelectItem value="seimei">正明市</SelectItem>
-                        <SelectItem value="tawarayama">俵山</SelectItem>
-                        <SelectItem value="senzaki">仙崎</SelectItem>
+                        {AREAS.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">沿線・駅</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="選択してください" />
-                      </SelectTrigger>
+                  </div>,
+                  <div key="price">
+                    <label className="block text-sm font-medium mb-1.5">価格（上限）</label>
+                    <Select value={sale.price} onValueChange={v => setSale(s => ({ ...s, price: v }))}>
+                      <SelectTrigger><SelectValue placeholder="指定なし" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="nagato">長門市駅</SelectItem>
-                        <SelectItem value="senzaki">仙崎駅</SelectItem>
-                        <SelectItem value="nagatoyumoto">長門湯本駅</SelectItem>
-                        <SelectItem value="itamochi">板持駅</SelectItem>
-                        <SelectItem value="misumi">三隅駅</SelectItem>
-                        <SelectItem value="hitomaru">人丸駅</SelectItem>
-                        <SelectItem value="furuyama">古市駅</SelectItem>
+                        {SALE_PRICES.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">価格</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="指定なし" />
-                      </SelectTrigger>
+                  </div>,
+                  <div key="type">
+                    <label className="block text-sm font-medium mb-1.5">物件種別</label>
+                    <Select value={sale.type} onValueChange={v => setSale(s => ({ ...s, type: v }))}>
+                      <SelectTrigger><SelectValue placeholder="指定なし" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="300">300万円以下</SelectItem>
-                        <SelectItem value="400">400万円以下</SelectItem>
-                        <SelectItem value="500">500万円以下</SelectItem>
-                        <SelectItem value="600">600万円以下</SelectItem>
-                        <SelectItem value="700">700万円以下</SelectItem>
-                        <SelectItem value="800">800万円以下</SelectItem>
-                        <SelectItem value="900">900万円以下</SelectItem>
-                        <SelectItem value="1000">1000万円以下</SelectItem>
-                        <SelectItem value="1100">1100万円以下</SelectItem>
-                        <SelectItem value="1200">1200万円以下</SelectItem>
-                        <SelectItem value="1300">1300万円以下</SelectItem>
-                        <SelectItem value="1400">1400万円以下</SelectItem>
-                        <SelectItem value="1500">1500万円以下</SelectItem>
-                        <SelectItem value="1600">1600万円以下</SelectItem>
-                        <SelectItem value="1700">1700万円以下</SelectItem>
-                        <SelectItem value="1800">1800万円以下</SelectItem>
-                        <SelectItem value="1900">1900万円以下</SelectItem>
-                        <SelectItem value="2000">2000万円以下</SelectItem>
-                        <SelectItem value="3000">3000万円以下</SelectItem>
-                        <SelectItem value="5000">5000万円以下</SelectItem>
-                        <SelectItem value="7000">7000万円以下</SelectItem>
-                        <SelectItem value="10000">1億円以下</SelectItem>
+                        {PROPERTY_TYPES_SALE.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">築年数</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="指定なし" />
-                      </SelectTrigger>
+                  </div>,
+                  <div key="age">
+                    <label className="block text-sm font-medium mb-1.5">築年数</label>
+                    <Select value={sale.age} onValueChange={v => setSale(s => ({ ...s, age: v }))}>
+                      <SelectTrigger><SelectValue placeholder="指定なし" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="new">新築</SelectItem>
-                        <SelectItem value="5">築5年以内</SelectItem>
-                        <SelectItem value="10">築10年以内</SelectItem>
-                        <SelectItem value="15">築15年以内</SelectItem>
-                        <SelectItem value="20">築20年以内</SelectItem>
-                        <SelectItem value="30">築30年以内</SelectItem>
+                        {AGES.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">駅歩分</label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="指定なし" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1分以内</SelectItem>
-                        <SelectItem value="3">3分以内</SelectItem>
-                        <SelectItem value="5">5分以内</SelectItem>
-                        <SelectItem value="10">10分以内</SelectItem>
-                        <SelectItem value="15">15分以内</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
+                  </div>,
+                ]} />
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link to="/properties" className="flex-1">
-                    <Button variant="premium" size="lg" className="w-full group">
-                      <Search className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                      この条件で探す
-                    </Button>
-                  </Link>
-                  <Link to="/properties">
-                    <Button variant="outline" size="lg" className="group">
-                      <Settings className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform" />
-                      詳細条件を設定
-                    </Button>
-                  </Link>
+                  <Button onClick={handleSaleSearch} size="lg" className="flex-1 bg-amber-600 hover:bg-amber-700 group">
+                    <Search className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                    この条件で売買物件を探す
+                  </Button>
+                  <Button onClick={() => navigate("/properties?type=sale")} variant="outline" size="lg" className="border-amber-600 text-amber-700 hover:bg-amber-50">
+                    <Settings className="mr-2 h-5 w-5" />
+                    詳細条件で絞り込む
+                  </Button>
                 </div>
               </div>
             </TabsContent>
