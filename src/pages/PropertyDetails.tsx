@@ -164,7 +164,14 @@ const PropertyDetails = () => {
                       <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
                     </Button>
                     <Button variant="outline" size="icon">
-                      <Share2 className="h-4 w-4" />
+                      <Share2 className="h-4 w-4" onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({ title: property.title, url: window.location.href });
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('URLをコピーしました');
+                        }
+                      }} />
                     </Button>
                   </div>
                 </div>
@@ -252,17 +259,23 @@ const PropertyDetails = () => {
                 <CardTitle>この物件について問い合わせる</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button className="w-full" size="lg">
-                  <Phone className="h-4 w-4 mr-2" />
-                  電話で問い合わせ
-                </Button>
-                <Button variant="outline" className="w-full" size="lg">
-                  <Mail className="h-4 w-4 mr-2" />
-                  メールで問い合わせ
-                </Button>
-                <Button variant="outline" className="w-full" size="lg">
-                  内見予約
-                </Button>
+                <a href="tel:0837223321" className="block">
+                  <Button className="w-full bg-green-600 hover:bg-green-700" size="lg">
+                    <Phone className="h-4 w-4 mr-2" />
+                    電話で問い合わせ（0837-22-3321）
+                  </Button>
+                </a>
+                <a href={`mailto:nag3321@sage.ocn.ne.jp?subject=${encodeURIComponent(`【物件問い合わせ】${property.title}`)}&body=${encodeURIComponent(`物件名：${property.title}\n物件ID：${property.id}\n\nお問い合わせ内容：\n`)}`} className="block">
+                  <Button variant="outline" className="w-full" size="lg">
+                    <Mail className="h-4 w-4 mr-2" />
+                    メールで問い合わせ
+                  </Button>
+                </a>
+                <a href={`/contact?property=${encodeURIComponent(property.title)}`} className="block">
+                  <Button variant="outline" className="w-full" size="lg">
+                    内見予約・お問い合わせ
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 

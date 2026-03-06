@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,19 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 const Contact = () => {
+  const params = new URLSearchParams(window.location.search);
+  const propertyParam = params.get("property") || "";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    subject: "",
-    message: "",
+    subject: propertyParam ? `【物件問い合わせ】${propertyParam}` : "",
+    message: propertyParam ? `物件名：${propertyParam}\n\nお問い合わせ内容：\n` : "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // フォーム送信処理
-    console.log("Contact form submitted:", formData);
-    alert("お問い合わせありがとうございます。担当者よりご連絡いたします。");
+    const mailtoLink = `mailto:nag3321@sage.ocn.ne.jp?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`お名前：${formData.name}\nメール：${formData.email}\n電話：${formData.phone}\n\n${formData.message}`)}`;
+    window.location.href = mailtoLink;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
