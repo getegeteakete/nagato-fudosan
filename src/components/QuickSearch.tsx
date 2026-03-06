@@ -39,13 +39,16 @@ const SALE_PRICES = [
 ];
 
 const PROPERTY_TYPES_RENTAL = [
-  { value: "apartment", label: "マンション" },
-  { value: "house", label: "戸建て" },
+  { value: "apartment", label: "アパート" },
+  { value: "house", label: "一戸建て" },
+  { value: "mansion", label: "マンション" },
+  { value: "warehouse", label: "倉庫" },
 ];
 const PROPERTY_TYPES_SALE = [
-  { value: "house", label: "戸建て" },
-  { value: "land", label: "土地" },
-  { value: "apartment", label: "マンション" },
+  { value: "apartment", label: "アパート" },
+  { value: "house", label: "一戸建て" },
+  { value: "mansion", label: "マンション" },
+  { value: "warehouse", label: "倉庫" },
 ];
 
 const AGES = [

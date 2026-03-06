@@ -24,8 +24,8 @@ const FeaturedProperties = () => {
     saveFavoritesToStorage(newFavs);
   };
 
-  const rentalProperties = PROPERTIES.filter((p) => p.type === "rent").slice(0, 10);
-  const saleProperties = PROPERTIES.filter((p) => p.type === "sale").slice(0, 10);
+  const rentalProperties = PROPERTIES.filter((p) => p.type === "rent").slice(0, 12);
+  const saleProperties = PROPERTIES.filter((p) => p.type === "sale").slice(0, 12);
 
   const PropertyGrid = ({ properties, type }: { properties: Property[]; type: "rent" | "sale" }) => (
     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
@@ -140,6 +140,14 @@ const FeaturedProperties = () => {
             </Link>
           </div>
           <PropertyGrid properties={rentalProperties} type="rent" />
+          <div className="text-center mt-4">
+            <Link to="/properties?type=rental">
+              <Button size="lg" className="bg-green-700 hover:bg-green-800 px-10">
+                賃貸物件をすべて見る
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* 売買物件 */}
@@ -160,6 +168,14 @@ const FeaturedProperties = () => {
             </Link>
           </div>
           <PropertyGrid properties={saleProperties} type="sale" />
+          <div className="text-center mt-4">
+            <Link to="/properties?type=sale">
+              <Button size="lg" className="bg-amber-600 hover:bg-amber-700 px-10">
+                売買物件をすべて見る
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
 
       </div>
