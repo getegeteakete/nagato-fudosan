@@ -240,7 +240,7 @@ const FAQ = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="secondary" size="lg" className="flex items-center gap-2">
                 <Phone className="h-5 w-5" />
-                03-1234-5678
+                0837-22-3321
               </Button>
               <Button variant="outline" size="lg" className="flex items-center gap-2 bg-white text-blue-600 hover:bg-gray-50">
                 <Mail className="h-5 w-5" />

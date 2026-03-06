@@ -270,7 +270,7 @@ const ValuationForm: React.FC<ValuationFormProps> = ({ onSuccess }) => {
                 <Input
                   id="address"
                   {...register('address')}
-                  placeholder="東京都渋谷区..."
+                  placeholder="山口県長門市..."
                 />
                 {errors.address && (
                   <p className="text-sm text-red-600">{errors.address.message}</p>

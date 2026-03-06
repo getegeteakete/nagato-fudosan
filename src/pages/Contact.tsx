@@ -92,7 +92,7 @@ const Contact = () => {
                         type="tel"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="03-1234-5678"
+                        placeholder="0837-22-3321"
                       />
                     </div>
                     <div>
@@ -150,7 +150,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">電話番号</p>
-                    <p className="text-gray-600">03-1234-5678</p>
+                    <p className="text-gray-600">0837-22-3321</p>
                   </div>
                 </div>
 
@@ -160,7 +160,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">メールアドレス</p>
-                    <p className="text-gray-600">info@premium-estate.jp</p>
+                    <p className="text-gray-600">nag3321@sage.ocn.ne.jp</p>
                   </div>
                 </div>
 
@@ -171,8 +171,8 @@ const Contact = () => {
                   <div>
                     <p className="font-semibold text-gray-900">所在地</p>
                     <p className="text-gray-600">
-                      東京都港区六本木 1-2-3<br />
-                      Premium Estate Building 10F
+                      〒759-4101<br />
+                      山口県長門市東深川2684番地5
                     </p>
                   </div>
                 </div>
