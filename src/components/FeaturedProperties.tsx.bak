@@ -1,0 +1,209 @@
+import { Heart, MapPin, Home, ArrowRight, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+
+// 長門不動産の物件データ（参考サイトから抽出）
+const properties = [
+  {
+    id: 1,
+    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+    title: "中古物件売買",
+    price: "490万円",
+    location: "長門市東深川正明市4区",
+    station: "JR山陰本線長門市駅",
+    layout: "6LDK",
+    area: "",
+    tags: ["new", "売買"],
+    type: "sale"
+  },
+  {
+    id: 2,
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+    title: "戸建賃貸",
+    price: "6.5万円",
+    location: "長門市東深川田屋",
+    station: "JR山陰本線仙崎駅",
+    layout: "4DK",
+    area: "",
+    tags: ["new", "賃貸"],
+    type: "rental"
+  },
+  {
+    id: 3,
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9",
+    title: "中古物件売買",
+    price: "500万円",
+    location: "長門市西深川上ノ原",
+    station: "JR山陰本線長門市駅",
+    layout: "",
+    area: "",
+    tags: ["up", "売買"],
+    type: "sale"
+  },
+  {
+    id: 4,
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    title: "アパート賃貸",
+    price: "4.9万円",
+    location: "長門市東深川田屋",
+    station: "JR山陰本線長門市駅",
+    layout: "1LDK",
+    area: "",
+    tags: ["new", "賃貸"],
+    type: "rental"
+  },
+  {
+    id: 5,
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6",
+    title: "アパート賃貸",
+    price: "5万円",
+    location: "長門市東深川田屋",
+    station: "JR山陰本線長門市駅",
+    layout: "1LDK",
+    area: "",
+    tags: ["new", "賃貸"],
+    type: "rental"
+  },
+  {
+    id: 6,
+    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa",
+    title: "事務所賃貸",
+    price: "6.6万円",
+    location: "長門市正明市",
+    station: "JR山陰本線長門市駅",
+    layout: "",
+    area: "",
+    tags: ["new", "賃貸"],
+    type: "rental"
+  },
+  {
+    id: 7,
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64",
+    title: "店舗賃貸",
+    price: "5万円",
+    location: "長門市東深川湊中央区",
+    station: "JR山陰本線長門市駅",
+    layout: "",
+    area: "",
+    tags: ["new", "賃貸"],
+    type: "rental"
+  },
+  {
+    id: 8,
+    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be",
+    title: "中古物件売買",
+    price: "400万円",
+    location: "長門市俵山",
+    station: "",
+    layout: "3DK",
+    area: "",
+    tags: ["売買"],
+    type: "sale"
+  }
+];
+
+const FeaturedProperties = () => {
+  return (
+    <section className="py-20 bg-gradient-to-b from-background to-secondary/20">
+      <div className="container">
+        <div className="text-center mb-12 animate-fade-in">
+          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-4">
+            おすすめ物件
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            厳選された上質な住まいをご紹介
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {properties.map((property, index) => (
+            <Card 
+              key={property.id} 
+              className="group overflow-hidden hover-lift cursor-pointer shadow-premium"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className="relative overflow-hidden aspect-[4/3]">
+                <img
+                  src={property.image}
+                  alt={property.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                />
+                <div className="absolute top-3 left-3 flex gap-2">
+                  {property.tags.map((tag) => (
+                    <Badge key={tag} className={`backdrop-blur-sm ${
+                      tag === 'new' ? 'bg-green-600 text-white' :
+                      tag === 'up' ? 'bg-blue-600 text-white' :
+                      tag === '売買' ? 'bg-orange-600 text-white' :
+                      tag === '賃貸' ? 'bg-purple-600 text-white' :
+                      'bg-primary/90 text-primary-foreground'
+                    }`}>
+                      {tag === 'new' ? 'NEW' : tag === 'up' ? 'UP' : tag}
+                    </Badge>
+                  ))}
+                </div>
+                <button 
+                  className="absolute top-3 right-3 p-2 rounded-full bg-card/80 backdrop-blur-sm hover:bg-card transition-colors"
+                  aria-label="お気に入りに追加"
+                >
+                  <Heart className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-3">
+                <h3 className="font-serif font-semibold text-lg group-hover:text-primary transition-colors">
+                  {property.title}
+                </h3>
+                
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-primary">{property.price}</span>
+                  {property.type === "rental" && (
+                    <span className="text-sm text-muted-foreground">/ 月</span>
+                  )}
+                </div>
+
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                    <span>{property.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Home className="h-4 w-4 flex-shrink-0" />
+                    <span>{property.station}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between pt-3 border-t border-border">
+                  <span className="text-sm font-medium">{property.layout}</span>
+                  <span className="text-sm text-muted-foreground">{property.area}</span>
+                </div>
+
+                <div className="pt-4">
+                  <Link to={`/property/${property.id}`}>
+                    <Button variant="outline" size="sm" className="w-full group">
+                      <Eye className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                      詳細を見る
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Link to="/properties">
+            <Button variant="outline" size="lg" className="group">
+              すべての物件を見る
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default FeaturedProperties;
