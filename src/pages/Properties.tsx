@@ -5,10 +5,9 @@ import { PropertyCard } from '@/components/PropertyCard';
 import { usePropertySearch } from '@/hooks/usePropertySearch';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Grid, List, Filter } from 'lucide-react';
+import { Grid, List, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +41,7 @@ const Properties: React.FC = () => {
     resetSearchCriteria,
     goToPage,
   } = usePropertySearch({
-    limit: 12,
+    limit: 30,
   });
 
   const handleSearch = (criteria: SearchCriteria) => {
@@ -182,12 +181,53 @@ const Properties: React.FC = () => {
 
                 {/* ページネーション */}
                 {totalPages > 1 && (
-                  <div className="flex justify-center">
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      onPageChange={goToPage}
-                    />
+                  <div className="flex items-center justify-center gap-2 mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { goToPage(currentPage - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={currentPage <= 1}
+                      className="flex items-center gap-1"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      前へ
+                    </Button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                        .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                          if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...');
+                          acc.push(p);
+                          return acc;
+                        }, [])
+                        .map((item, idx) =>
+                          item === '...' ? (
+                            <span key={`ellipsis-${idx}`} className="px-2 text-gray-400">…</span>
+                          ) : (
+                            <Button
+                              key={item}
+                              variant={currentPage === item ? 'default' : 'outline'}
+                              size="sm"
+                              className={cn("w-9 h-9 p-0", currentPage === item && "bg-green-700 hover:bg-green-800 border-green-700")}
+                              onClick={() => { goToPage(item as number); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                            >
+                              {item}
+                            </Button>
+                          )
+                        )}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { goToPage(currentPage + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={currentPage >= totalPages}
+                      className="flex items-center gap-1"
+                    >
+                      次へ
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
                 )}
               </>
