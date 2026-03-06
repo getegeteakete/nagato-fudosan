@@ -188,8 +188,11 @@ const Contact = () => {
                   <div>
                     <p className="font-semibold text-gray-900">営業時間</p>
                     <p className="text-gray-600">
-                      平日 9:00-18:00<br />
-                      土日祝 10:00-17:00
+                      平日 9:00〜18:00<br />
+                      土日祝 10:00〜17:00
+                    </p>
+                    <p className="text-sm text-red-600 mt-1 font-medium">
+                      【定休日】毎週水曜日・第2火曜日・第3日曜日
                     </p>
                   </div>
                 </div>
