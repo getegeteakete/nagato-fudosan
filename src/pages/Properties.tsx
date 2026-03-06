@@ -147,9 +147,9 @@ const Properties: React.FC = () => {
             {/* 検索結果 */}
             {isLoading ? (
               <div className={cn(
-                "grid gap-6",
+                "grid gap-3 md:gap-6",
                 viewMode === 'grid' 
-                  ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
+                  ? "grid-cols-2 md:grid-cols-2 xl:grid-cols-3" 
                   : "grid-cols-1"
               )}>
                 {Array.from({ length: 6 }).map((_, index) => (
@@ -164,9 +164,9 @@ const Properties: React.FC = () => {
             ) : properties.length > 0 ? (
               <>
                 <div className={cn(
-                  "grid gap-6 mb-8",
+                  "grid gap-3 md:gap-6 mb-8",
                   viewMode === 'grid' 
-                    ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
+                    ? "grid-cols-2 md:grid-cols-2 xl:grid-cols-3" 
                     : "grid-cols-1"
                 )}>
                   {properties.map((property) => (

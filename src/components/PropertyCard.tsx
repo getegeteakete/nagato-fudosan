@@ -128,55 +128,49 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="p-4">
-        <div className="space-y-2">
-          <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-blue-600 transition-colors">
+      <CardContent className="p-2.5 sm:p-4">
+        <div className="space-y-1.5 sm:space-y-2">
+          <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-blue-600 transition-colors">
             {property.title}
           </h3>
           
-          <div className="flex items-center text-sm text-gray-600">
-            <MapPin className="h-4 w-4 mr-1" />
+          <div className="flex items-center text-xs sm:text-sm text-gray-600">
+            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
             <span className="line-clamp-1">{property.address}</span>
           </div>
 
           {property.station && (
-            <div className="text-sm text-gray-600">
+            <div className="hidden sm:block text-sm text-gray-600">
               {property.station}
               {property.walkingTime && ` 徒歩${property.walkingTime}分`}
             </div>
           )}
 
           <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-base sm:text-2xl font-bold text-blue-600">
               {formatPrice(property.type === 'rent' ? property.rent || 0 : property.price, property.type)}
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-xs sm:text-sm text-gray-600">
               {property.area}㎡
             </div>
           </div>
 
           {property.type === 'rent' && (property.deposit || property.keyMoney) && (
-            <div className="text-sm text-gray-600">
+            <div className="hidden sm:block text-sm text-gray-600">
               {property.deposit && `敷金: ¥${property.deposit.toLocaleString()}`}
               {property.deposit && property.keyMoney && ' / '}
               {property.keyMoney && `礼金: ¥${property.keyMoney.toLocaleString()}`}
             </div>
           )}
 
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1 text-xs text-gray-600">
             <span>{property.rooms}部屋</span>
             <span>•</span>
             <span>{property.age}年築</span>
-            {property.floor && (
-              <>
-                <span>•</span>
-                <span>{property.floor}階</span>
-              </>
-            )}
           </div>
 
           {property.features && property.features.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
+            <div className="hidden sm:flex flex-wrap gap-1 mt-2">
               {property.features.slice(0, 4).map((feature) => (
                 <Badge key={feature} variant="outline" className="text-xs">
                   {getFeatureIcon(feature)}
@@ -193,7 +187,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-2.5 sm:p-4 pt-0">
         <Button 
           className="w-full" 
           variant="outline"

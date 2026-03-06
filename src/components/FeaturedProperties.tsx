@@ -10,6 +10,7 @@ import { Property } from "@/types/database";
 
 const FeaturedProperties = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"rental" | "sale">("rental");
 
   useEffect(() => {
     setFavorites(getFavoritesFromStorage());
@@ -38,10 +39,14 @@ const FeaturedProperties = () => {
     return badges;
   };
 
+  const rentalProperties = PROPERTIES.filter((p) => p.type === "rent").slice(0, 10);
+  const saleProperties = PROPERTIES.filter((p) => p.type === "sale").slice(0, 10);
+  const displayProperties = activeTab === "rental" ? rentalProperties : saleProperties;
+
   return (
     <section className="py-20 bg-gradient-to-b from-background to-secondary/20">
       <div className="container">
-        <div className="text-center mb-12 animate-fade-in">
+        <div className="text-center mb-10 animate-fade-in">
           <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-4">
             おすすめ物件
           </h2>
@@ -50,8 +55,34 @@ const FeaturedProperties = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {PROPERTIES.map((property, index) => (
+        {/* タブ */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex bg-gray-100 rounded-lg p-1 gap-1">
+            <button
+              onClick={() => setActiveTab("rental")}
+              className={`px-6 py-2.5 rounded-md text-sm font-semibold transition-all ${
+                activeTab === "rental"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              賃貸 {rentalProperties.length}件
+            </button>
+            <button
+              onClick={() => setActiveTab("sale")}
+              className={`px-6 py-2.5 rounded-md text-sm font-semibold transition-all ${
+                activeTab === "sale"
+                  ? "bg-orange-600 text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              売買 {saleProperties.length}件
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-12">
+          {displayProperties.map((property, index) => (
             <Card
               key={property.id}
               className="group overflow-hidden hover-lift cursor-pointer shadow-premium"
@@ -68,20 +99,23 @@ const FeaturedProperties = () => {
                       "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400";
                   }}
                 />
-                <div className="absolute top-3 left-3 flex gap-1 flex-wrap">
+                <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                   {getBadges(property).map((badge) => (
-                    <Badge key={badge.label} className={`backdrop-blur-sm text-xs ${badge.color}`}>
+                    <Badge key={badge.label} className={`backdrop-blur-sm text-xs ${badge.color} hidden sm:inline-flex`}>
                       {badge.label}
                     </Badge>
                   ))}
+                  <Badge className={`backdrop-blur-sm text-xs ${getBadges(property)[1].color} sm:hidden`}>
+                    {getBadges(property)[1].label}
+                  </Badge>
                 </div>
                 <button
-                  className="absolute top-3 right-3 p-2 rounded-full bg-card/80 backdrop-blur-sm hover:bg-card transition-colors"
+                  className="absolute top-2 right-2 p-1.5 rounded-full bg-card/80 backdrop-blur-sm hover:bg-card transition-colors"
                   aria-label="お気に入りに追加"
                   onClick={(e) => toggleFavorite(property.id, e)}
                 >
                   <Heart
-                    className={`h-5 w-5 transition-colors ${
+                    className={`h-4 w-4 transition-colors ${
                       favorites.includes(property.id)
                         ? "fill-red-500 text-red-500"
                         : "text-muted-foreground"
@@ -90,29 +124,29 @@ const FeaturedProperties = () => {
                 </button>
               </div>
 
-              <div className="p-5 space-y-3">
-                <h3 className="font-serif font-semibold text-lg group-hover:text-primary transition-colors">
+              <div className="p-2.5 sm:p-5 space-y-1.5 sm:space-y-3">
+                <h3 className="font-serif font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-primary transition-colors">
                   {property.title}
                 </h3>
 
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-primary">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-base sm:text-2xl font-bold text-primary">
                     {formatPrice(property)}
                   </span>
                   {property.type === "rent" && (
-                    <span className="text-sm text-muted-foreground">/ 月</span>
+                    <span className="text-xs text-muted-foreground">/ 月</span>
                   )}
                 </div>
 
-                <div className="space-y-1.5 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3 flex-shrink-0" />
                     <span className="truncate">{property.address.replace("山口県", "")}</span>
                   </div>
                   {property.station && (
-                    <div className="flex items-center gap-2">
-                      <Train className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate text-xs">
+                    <div className="hidden sm:flex items-center gap-1">
+                      <Train className="h-3 w-3 flex-shrink-0" />
+                      <span className="truncate">
                         {property.station}
                         {property.walkingTime ? ` 徒歩${property.walkingTime}分` : ""}
                       </span>
@@ -120,23 +154,21 @@ const FeaturedProperties = () => {
                   )}
                 </div>
 
-                <div className="flex justify-between pt-3 border-t border-border">
+                <div className="flex justify-between pt-2 border-t border-border text-xs">
                   {property.rooms > 0 && property.propertyType !== "land" ? (
-                    <span className="text-sm font-medium">
-                      {property.rooms}K〜
-                    </span>
+                    <span className="font-medium">{property.rooms}K〜</span>
                   ) : (
-                    <span className="text-sm font-medium"></span>
+                    <span></span>
                   )}
                   {property.area > 0 && (
-                    <span className="text-sm text-muted-foreground">{property.area}m²</span>
+                    <span className="text-muted-foreground">{property.area}m²</span>
                   )}
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <Link to={`/property/${property.id}`}>
-                    <Button variant="outline" size="sm" className="w-full group">
-                      <Eye className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                    <Button variant="outline" size="sm" className="w-full text-xs h-8 group">
+                      <Eye className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform" />
                       詳細を見る
                     </Button>
                   </Link>
@@ -147,9 +179,9 @@ const FeaturedProperties = () => {
         </div>
 
         <div className="text-center">
-          <Link to="/properties">
+          <Link to={`/properties?type=${activeTab === "rental" ? "rental" : "sale"}`}>
             <Button variant="outline" size="lg" className="group">
-              すべての物件を見る
+              {activeTab === "rental" ? "賃貸物件" : "売買物件"}をすべて見る
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
