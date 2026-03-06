@@ -9,9 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Filter, Save } from 'lucide-react';
+import { Search, MapPin, Navigation } from 'lucide-react';
 import { useSavedSearches } from '@/hooks/usePropertySearch';
 
 const searchSchema = z.object({
@@ -19,6 +18,7 @@ const searchSchema = z.object({
   propertyType: z.array(z.string()).optional(),
   prefecture: z.string().optional(),
   city: z.string().optional(),
+  area: z.string().optional(),
   station: z.string().optional(),
   minPrice: z.number().optional(),
   maxPrice: z.number().optional(),
@@ -39,10 +39,16 @@ interface PropertySearchFormProps {
   showSaveButton?: boolean;
 }
 
-const PREFECTURES = [
-  '山口県', '広島県', '岡山県', '鳥取県', '島根県',
-  '福岡県', '大分県', '熊本県', '宮崎県', '鹿児島県',
-  '兵庫県', '大阪府', '京都府',
+// 長門市のエリア（大字レベル）
+const NAGATO_AREAS = [
+  { value: '東深川', label: '東深川（市街地中心）' },
+  { value: '西深川', label: '西深川' },
+  { value: '仙崎', label: '仙崎' },
+  { value: '三隅', label: '三隅' },
+  { value: '日置', label: '日置' },
+  { value: '油谷', label: '油谷' },
+  { value: '俵山', label: '俵山' },
+  { value: '深川湯本', label: '深川湯本（湯本温泉）' },
 ];
 
 const PROPERTY_TYPES = [
@@ -70,8 +76,8 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
   initialCriteria = {},
   showSaveButton = true,
 }) => {
-  const [saveSearchName, setSaveSearchName] = useState('');
-  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsArea, setGpsArea] = useState<string | null>(null);
   const { saveSearch } = useSavedSearches();
 
   const {
@@ -80,14 +86,14 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
     watch,
     setValue,
     reset,
-    formState: { errors },
   } = useForm<SearchFormData>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
       type: initialCriteria.type,
       propertyType: initialCriteria.propertyType || [],
-      prefecture: initialCriteria.prefecture,
-      city: initialCriteria.city,
+      prefecture: '山口県',
+      city: '長門市',
+      area: initialCriteria.city || '',
       station: initialCriteria.station,
       minPrice: initialCriteria.minPrice,
       maxPrice: initialCriteria.maxPrice,
@@ -106,27 +112,12 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
   const onSubmit = (data: SearchFormData) => {
     const criteria: SearchCriteria = {
       ...data,
-      // 空の配列やundefinedを除去
+      prefecture: '山口県',
+      city: data.area ? `長門市${data.area}` : '長門市',
       propertyType: data.propertyType?.length ? data.propertyType : undefined,
       features: data.features?.length ? data.features : undefined,
     };
     onSearch(criteria);
-  };
-
-  const handleSaveSearch = async () => {
-    if (!saveSearchName.trim()) return;
-    
-    const criteria: SearchCriteria = {
-      ...watchedValues,
-      propertyType: watchedValues.propertyType?.length ? watchedValues.propertyType : undefined,
-      features: watchedValues.features?.length ? watchedValues.features : undefined,
-    };
-
-    const success = await saveSearch(saveSearchName, criteria);
-    if (success) {
-      setSaveSearchName('');
-      setShowSaveDialog(false);
-    }
   };
 
   const handleFeatureChange = (feature: string, checked: boolean) => {
@@ -138,15 +129,77 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
     }
   };
 
+  // 現在地から近いエリアを自動判定
+  const handleGpsSearch = () => {
+    if (!navigator.geolocation) {
+      alert('お使いのブラウザは位置情報に対応していません');
+      return;
+    }
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        // 長門市エリアの中心座標（大まかな判定）
+        const areaCoords: { area: string; lat: number; lng: number }[] = [
+          { area: '東深川', lat: 34.374, lng: 131.182 },
+          { area: '西深川', lat: 34.364, lng: 131.168 },
+          { area: '仙崎', lat: 34.388, lng: 131.228 },
+          { area: '三隅', lat: 34.299, lng: 131.210 },
+          { area: '日置', lat: 34.416, lng: 131.098 },
+          { area: '油谷', lat: 34.456, lng: 131.014 },
+          { area: '俵山', lat: 34.337, lng: 131.113 },
+          { area: '深川湯本', lat: 34.374, lng: 131.147 },
+        ];
+        // 最も近いエリアを計算
+        let nearest = areaCoords[0];
+        let minDist = Infinity;
+        for (const a of areaCoords) {
+          const d = Math.sqrt((a.lat - latitude) ** 2 + (a.lng - longitude) ** 2);
+          if (d < minDist) { minDist = d; nearest = a; }
+        }
+        setValue('area', nearest.area);
+        setGpsArea(nearest.area);
+        setGpsLoading(false);
+        // 自動検索
+        onSearch({
+          prefecture: '山口県',
+          city: `長門市${nearest.area}`,
+        });
+      },
+      () => {
+        alert('位置情報の取得に失敗しました。設定をご確認ください。');
+        setGpsLoading(false);
+      },
+      { timeout: 10000 }
+    );
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Search className="h-5 w-5" />
+          <Search className="h-5 w-5 text-green-700" />
           物件検索
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* 現在地から探すボタン */}
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full mb-4 border-green-600 text-green-700 hover:bg-green-50"
+          onClick={handleGpsSearch}
+          disabled={gpsLoading}
+        >
+          <Navigation className={`h-4 w-4 mr-2 ${gpsLoading ? 'animate-spin' : ''}`} />
+          {gpsLoading ? '位置情報を取得中...' : '現在地から近い物件を探す'}
+        </Button>
+        {gpsArea && (
+          <p className="text-xs text-green-700 text-center -mt-2 mb-3">
+            📍 現在地に近いエリア：<strong>{gpsArea}</strong>
+          </p>
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -155,7 +208,36 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
             </TabsList>
 
             <TabsContent value="basic" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 固定：山口県・長門市 */}
+              <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-green-700 flex-shrink-0" />
+                <div>
+                  <span className="text-xs text-green-600 font-medium">検索エリア固定</span>
+                  <p className="text-sm font-bold text-green-800">山口県 長門市</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>エリア（地区）</Label>
+                <Select
+                  value={watchedValues.area || ''}
+                  onValueChange={(value) => setValue('area', value === 'all' ? '' : value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="地区を選択（全域）" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全域</SelectItem>
+                    {NAGATO_AREAS.map((area) => (
+                      <SelectItem key={area.value} value={area.value}>
+                        {area.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="type">取引種別</Label>
                   <Select
@@ -163,48 +245,13 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
                     onValueChange={(value) => setValue('type', value as 'rent' | 'sale')}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="選択してください" />
+                      <SelectValue placeholder="すべて" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="rent">賃貸</SelectItem>
                       <SelectItem value="sale">売買</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="prefecture">都道府県</Label>
-                  <Select
-                    value={watchedValues.prefecture || ''}
-                    onValueChange={(value) => setValue('prefecture', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="選択してください" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PREFECTURES.map((pref) => (
-                        <SelectItem key={pref} value={pref}>
-                          {pref}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="city">市区町村</Label>
-                  <Input
-                    {...register('city')}
-                    placeholder="例: 渋谷区"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="station">最寄り駅</Label>
-                  <Input
-                    {...register('station')}
-                    placeholder="例: 渋谷駅"
-                  />
                 </div>
               </div>
 
@@ -226,16 +273,16 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  <Label>面積</Label>
+                  <Label>面積（㎡）</Label>
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       type="number"
-                      placeholder="最小面積（㎡）"
+                      placeholder="最小"
                       {...register('minArea', { valueAsNumber: true })}
                     />
                     <Input
                       type="number"
-                      placeholder="最大面積（㎡）"
+                      placeholder="最大"
                       {...register('maxArea', { valueAsNumber: true })}
                     />
                   </div>
@@ -269,43 +316,34 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  <Label>間取り</Label>
+                  <Label>間取り（部屋数）</Label>
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       type="number"
-                      placeholder="最小部屋数"
+                      placeholder="最小"
                       {...register('minRooms', { valueAsNumber: true })}
                     />
                     <Input
                       type="number"
-                      placeholder="最大部屋数"
+                      placeholder="最大"
                       {...register('maxRooms', { valueAsNumber: true })}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>築年数</Label>
+                  <Label>築年数（以内）</Label>
                   <Input
                     type="number"
-                    placeholder="最大築年数"
+                    placeholder="例：20（年以内）"
                     {...register('maxAge', { valueAsNumber: true })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>徒歩時間</Label>
-                  <Input
-                    type="number"
-                    placeholder="最大徒歩時間（分）"
-                    {...register('maxWalkingTime', { valueAsNumber: true })}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label>設備・特徴</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {FEATURES.map((feature) => (
                     <div key={feature.value} className="flex items-center space-x-2">
                       <Checkbox
@@ -324,55 +362,19 @@ export const PropertySearchForm: React.FC<PropertySearchFormProps> = ({
           </Tabs>
 
           <div className="flex gap-2">
-            <Button type="submit" className="flex-1">
+            <Button type="submit" className="flex-1 bg-green-700 hover:bg-green-800">
               <Search className="h-4 w-4 mr-2" />
               検索
             </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={() => reset()}
+              onClick={() => { reset({ prefecture: '山口県', city: '長門市', area: '' }); setGpsArea(null); }}
             >
               リセット
             </Button>
-            {showSaveButton && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowSaveDialog(true)}
-              >
-                <Save className="h-4 w-4 mr-2" />
-                保存
-              </Button>
-            )}
           </div>
         </form>
-
-        {showSaveDialog && (
-          <div className="mt-4 p-4 border rounded-lg bg-gray-50">
-            <Label htmlFor="saveSearchName">検索条件名</Label>
-            <div className="flex gap-2 mt-2">
-              <Input
-                id="saveSearchName"
-                value={saveSearchName}
-                onChange={(e) => setSaveSearchName(e.target.value)}
-                placeholder="検索条件名を入力"
-              />
-              <Button onClick={handleSaveSearch} disabled={!saveSearchName.trim()}>
-                保存
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSaveSearchName('');
-                  setShowSaveDialog(false);
-                }}
-              >
-                キャンセル
-              </Button>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
