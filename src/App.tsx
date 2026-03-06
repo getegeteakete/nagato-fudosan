@@ -21,6 +21,8 @@ import Terms from "./pages/Terms";
 import About from "./pages/About";
 import Layout from "./components/Layout";
 
+import ScrollToTop from "./components/ScrollToTop";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -30,6 +32,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Layout><Index /></Layout>} />
             <Route path="/properties" element={<Layout><Properties /></Layout>} />
