@@ -3,13 +3,13 @@ import { Shield, Clock, TrendingUp } from "lucide-react";
 const highlights = [
   {
     icon: Clock,
-    title: "地域密着46年",
-    description: "長門市に根付いて46年。地域の特性を深く理解したサポート"
+    title: "地域密着48年",
+    description: "長門市に根付いて48年。地域の特性を深く理解したサポート"
   },
   {
     icon: Shield,
     title: "信頼と安心",
-    description: "46年の実績と豊富な経験で、お客様に安心してお任せいただけるサービス"
+    description: "48年の実績と豊富な経験で、お客様に安心してお任せいただけるサービス"
   },
   {
     icon: TrendingUp,

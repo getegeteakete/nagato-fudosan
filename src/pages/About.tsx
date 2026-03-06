@@ -4,22 +4,22 @@ import { Building2, Users, Award, Target, Heart, Shield, TrendingUp, Globe } fro
 
 const About = () => {
   const stats = [
-    { label: "創業年数", value: "46", description: "年" },
+    { label: "創業年数", value: "48", description: "年" },
     { label: "地域密着", value: "100%", description: "" },
     { label: "対応地域", value: "長門市", description: "全域" },
-    { label: "信頼実績", value: "46", description: "年" },
+    { label: "信頼実績", value: "48", description: "年" },
   ];
 
   const values = [
     {
       icon: <Heart className="h-8 w-8 text-red-500" />,
-      title: "地域密着46年",
-      description: "長門市に根付いて46年。地域の特性を深く理解し、お客様に最適なサービスを提供します。"
+      title: "地域密着48年",
+      description: "長門市に根付いて48年。地域の特性を深く理解し、お客様に最適なサービスを提供します。"
     },
     {
       icon: <Shield className="h-8 w-8 text-blue-500" />,
       title: "信頼と安心",
-      description: "46年の実績と豊富な経験で、お客様に安心してお任せいただけるサービスを提供します。"
+      description: "48年の実績と豊富な経験で、お客様に安心してお任せいただけるサービスを提供します。"
     },
     {
       icon: <TrendingUp className="h-8 w-8 text-green-500" />,
@@ -48,7 +48,7 @@ const About = () => {
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">会社案内</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          おかげさまで地元に根付いて46年。長門市の賃貸・物件・不動産売買・空き家管理・不動産管理はお任せください。
+          おかげさまで地元に根付いて48年。長門市の賃貸・物件・不動産売買・空き家管理・不動産管理はお任せください。
         </p>
       </div>
 
@@ -74,7 +74,7 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900">創業</h4>
-                  <p className="text-gray-600">1978年（46年の実績）</p>
+                  <p className="text-gray-600">1976年（48年の実績）</p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900">免許証番号</h4>
@@ -195,7 +195,7 @@ const About = () => {
                   1978年の創業以来、私たち長門不動産は地域密着の不動産サービスを提供し、長門市の皆様の住まい探しをサポートしてまいりました。
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  46年間で培った地域の知識と信頼関係を活かし、お客様一人ひとりに最適な物件をご提案いたします。私たちはただ安いだけでは意味がないと考え、広告や営業など無駄な費用を削減することで、お客様のためのサポートをすることができます。
+                  48年間で培った地域の知識と信頼関係を活かし、お客様一人ひとりに最適な物件をご提案いたします。私たちはただ安いだけでは意味がないと考え、広告や営業など無駄な費用を削減することで、お客様のためのサポートをすることができます。
                 </p>
                 <p className="text-gray-700 leading-relaxed">
                   一生に一度の、納得のいく物件が見つかるまで、とことんおつき合いさせていただきます。長門市の不動産のプロフェッショナルとして、これからも地域社会の発展に貢献してまいります。

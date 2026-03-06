@@ -20,18 +20,18 @@ const Navigation = () => {
   const { isAuthenticated, user, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-green-700 bg-green-800 shadow-sm">
       <nav className="container flex h-20 items-center justify-between py-4">
         {/* Logo */}
         <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
           <div className="flex flex-col">
-            <span className="font-serif text-2xl font-bold text-gray-900">(有)長門不動産</span>
-            <span className="text-xs text-gray-600 font-medium">おかげさまで地元に根付いて46年</span>
+            <span className="font-serif text-2xl font-bold text-white">(有)長門不動産</span>
+            <span className="text-xs text-green-200 font-medium">おかげさまで地元に根付いて48年</span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <NavigationMenu className="hidden lg:flex">
+        <NavigationMenu className="hidden lg:flex [&_button]:text-white [&_button]:hover:bg-green-700 [&_button]:bg-transparent">
           <NavigationMenuList>
             {/* 物件を探す */}
             <NavigationMenuItem>
@@ -275,7 +275,7 @@ const Navigation = () => {
 
             {/* 会社案内 */}
             <NavigationMenuItem>
-              <Link to="/about" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50">
+              <Link to="/about" className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50">
                 会社案内
               </Link>
             </NavigationMenuItem>
@@ -285,7 +285,7 @@ const Navigation = () => {
         {/* CTA Button */}
         <div className="hidden lg:flex items-center space-x-4">
           <Link to="/contact">
-            <Button variant="outline" size="sm">お問い合わせ</Button>
+            <Button variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-green-800">お問い合わせ</Button>
           </Link>
           {isAuthenticated ? (
             <DropdownMenu>
@@ -314,7 +314,7 @@ const Navigation = () => {
           ) : (
             <>
               <Link to="/login">
-                <Button variant="outline" size="sm">ログイン</Button>
+                <Button variant="outline" size="sm" className="border-white text-white hover:bg-white hover:text-green-800">ログイン</Button>
               </Link>
               <Link to="/register">
                 <Button variant="premium" size="sm">新規登録</Button>
@@ -336,7 +336,7 @@ const Navigation = () => {
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
                 <div className="flex flex-col">
                   <span className="font-serif text-lg font-bold text-gray-900">(有)長門不動産</span>
-                  <span className="text-xs text-gray-600">おかげさまで地元に根付いて46年</span>
+                  <span className="text-xs text-gray-600">おかげさまで地元に根付いて48年</span>
                 </div>
               </div>
 

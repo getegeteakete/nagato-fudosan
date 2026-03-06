@@ -11,11 +11,11 @@ const Footer = () => {
         <div className="flex items-center mb-6">
           <div className="flex flex-col">
             <span className="font-serif text-2xl font-bold">(有)長門不動産</span>
-            <span className="text-xs text-gray-300 font-medium">おかげさまで地元に根付いて46年</span>
+            <span className="text-xs text-gray-300 font-medium">おかげさまで地元に根付いて48年</span>
           </div>
         </div>
             <p className="text-gray-300 mb-6 leading-relaxed max-w-md">
-              おかげさまで地元に根付いて46年。長門市の賃貸・物件・不動産売買・空き家管理・不動産管理はお任せください。
+              おかげさまで地元に根付いて48年。長門市の賃貸・物件・不動産売買・空き家管理・不動産管理はお任せください。
             </p>
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3 text-gray-300">

@@ -15,7 +15,7 @@ const Hero = () => {
       >
         <source src="/hero-video.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-black/55" />
+      <div className="absolute inset-0 bg-black/35" />
 
       {/* コンテンツ */}
       <div className="relative container h-full flex items-center">
