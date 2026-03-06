@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Heart, MapPin, Home, Car, Wifi, Users } from 'lucide-react';
 import { useFavorites } from '@/hooks/usePropertySearch';
 import { useAuth } from '@/contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface PropertyCardProps {
   property: Property;
@@ -21,6 +22,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   const { isAuthenticated } = useAuth();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const isFavorited = isFavorite(property.id);
+  const navigate = useNavigate();
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -84,7 +86,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <Card 
       className="group cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
-      onClick={() => onViewDetails?.(property)}
+      onClick={() => navigate(`/property/${property.id}`)}
     >
       <CardHeader className="p-0">
         <div className="relative">
@@ -188,16 +190,11 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
       </CardContent>
 
       <CardFooter className="p-2.5 sm:p-4 pt-0">
-        <Button 
-          className="w-full" 
-          variant="outline"
-          onClick={(e) => {
-            e.stopPropagation();
-            onViewDetails?.(property);
-          }}
-        >
-          詳細を見る
-        </Button>
+        <Link to={`/property/${property.id}`} className="w-full" onClick={(e) => e.stopPropagation()}>
+          <Button className="w-full" variant="outline">
+            詳細を見る
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

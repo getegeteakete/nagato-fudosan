@@ -1,4 +1,4 @@
-import { Building2, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Building2, Mail, Phone, MapPin, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -40,19 +40,13 @@ const Footer = () => {
             
             {/* Social Media */}
             <div className="mt-8">
-              <h5 className="text-sm font-semibold text-gray-300 mb-4">フォローする</h5>
+              <h5 className="text-sm font-semibold text-gray-300 mb-4">お問い合わせ先</h5>
               <div className="flex space-x-3">
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
-                  <Facebook className="h-5 w-5" />
+                <a href="tel:0837223321" className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center hover:bg-green-500 transition-colors text-xs font-bold">
+                  TEL
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-400 transition-colors">
-                  <Twitter className="h-5 w-5" />
-                </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors">
-                  <Instagram className="h-5 w-5" />
-                </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
-                  <Linkedin className="h-5 w-5" />
+                <a href="mailto:nag3321@sage.ocn.ne.jp" className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors text-xs font-bold">
+                  MAIL
                 </a>
               </div>
             </div>

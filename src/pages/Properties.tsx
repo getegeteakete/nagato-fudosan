@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Grid, List, Filter, SortAsc, SortDesc } from 'lucide-react';
+import { Grid, List, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 type ViewMode = 'grid' | 'list';
 type SortOption = 'price_asc' | 'price_desc' | 'area_asc' | 'area_desc' | 'newest' | 'oldest';
@@ -54,10 +55,10 @@ const Properties: React.FC = () => {
     updateSearchCriteria({ ...searchCriteria, sortBy: value });
   };
 
+  const navigate = useNavigate();
+
   const handleViewDetails = (property: Property) => {
-    setSelectedProperty(property);
-    // 詳細ページへの遷移やモーダル表示の処理
-    console.log('View details for property:', property.id);
+    navigate(`/property/${property.id}`);
   };
 
   if (error) {
