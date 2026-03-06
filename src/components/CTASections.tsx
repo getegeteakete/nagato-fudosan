@@ -44,7 +44,7 @@ const CTASections = () => {
                 </h3>
                 <p className="text-muted-foreground mb-6 leading-relaxed">
                   退去申請や各種お手続きは<br />
-                  オンラインで24時間受付中です。
+                  お電話またはメールにてお受けしております。
                 </p>
                 <Link to="/moveout">
                   <Button variant="outline" size="lg" className="group/btn border-2 hover:bg-primary hover:text-primary-foreground transition-all">
