@@ -47,7 +47,12 @@ const Register: React.FC = () => {
   const onSubmit = async (data: RegisterFormData) => {
     setError(null);
     try {
-      const { confirmPassword, agreeToTerms, ...userData } = data;
+      const { confirmPassword, agreeToTerms, password, ...userData } = data;
+      // パスワードをmock_passwordsに保存
+      const passwords = JSON.parse(localStorage.getItem('mock_passwords') || '{}');
+      passwords[data.email] = password;
+      localStorage.setItem('mock_passwords', JSON.stringify(passwords));
+
       const success = await registerUser({
         ...userData,
         role: 'user',

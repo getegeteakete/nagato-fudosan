@@ -34,21 +34,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('auth_token');
-      if (token) {
+      const stored = localStorage.getItem('auth_user');
+      if (stored) {
         try {
-          const response = await apiClient.getUserProfile();
-          if (response.success && response.data) {
-            setUser(response.data);
-          } else {
-            // トークンが無効な場合
-            localStorage.removeItem('auth_token');
-            apiClient.setToken(null);
-          }
-        } catch (error) {
-          console.error('Auth initialization error:', error);
-          localStorage.removeItem('auth_token');
-          apiClient.setToken(null);
+          setUser(JSON.parse(stored));
+        } catch {
+          localStorage.removeItem('auth_user');
         }
       }
       setIsLoading(false);
@@ -59,11 +50,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await apiClient.login(email, password);
-      if (response.success && response.data) {
-        const { user: userData, token } = response.data;
-        setUser(userData);
-        apiClient.setToken(token);
+      // モック認証: localStorage に登録済みユーザーがあれば照合
+      const stored = localStorage.getItem('mock_users');
+      const users: User[] = stored ? JSON.parse(stored) : [];
+      const found = users.find(u => u.email === email);
+      if (found) {
+        const passwords = JSON.parse(localStorage.getItem('mock_passwords') || '{}');
+        if (passwords[email] === password) {
+          setUser(found);
+          localStorage.setItem('auth_user', JSON.stringify(found));
+          return true;
+        }
+        return false;
+      }
+      // デモ用管理者アカウント
+      if (email === 'admin@nagato-fudosan.jp' && password === 'admin123') {
+        const adminUser: User = { id: 'admin', name: '管理者', email, role: 'admin', isActive: true, emailVerified: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+        setUser(adminUser);
+        localStorage.setItem('auth_user', JSON.stringify(adminUser));
         return true;
       }
       return false;
@@ -75,14 +79,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<boolean> => {
     try {
-      const response = await apiClient.register(userData);
-      if (response.success && response.data) {
-        const { user: newUser, token } = response.data;
-        setUser(newUser);
-        apiClient.setToken(token);
-        return true;
+      const stored = localStorage.getItem('mock_users');
+      const users: User[] = stored ? JSON.parse(stored) : [];
+      if (users.find(u => u.email === userData.email)) {
+        return false; // すでに登録済み
       }
-      return false;
+      const newUser: User = {
+        ...userData,
+        id: `user_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      users.push(newUser);
+      localStorage.setItem('mock_users', JSON.stringify(users));
+      setUser(newUser);
+      localStorage.setItem('auth_user', JSON.stringify(newUser));
+      return true;
     } catch (error) {
       console.error('Registration error:', error);
       return false;
@@ -90,15 +102,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async (): Promise<void> => {
-    try {
-      await apiClient.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      setUser(null);
-      apiClient.setToken(null);
-      localStorage.removeItem('auth_token');
-    }
+    setUser(null);
+    localStorage.removeItem('auth_user');
   };
 
   const updateUser = (userData: Partial<User>) => {
