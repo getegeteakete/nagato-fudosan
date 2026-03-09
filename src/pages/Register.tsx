@@ -36,9 +36,12 @@ const Register: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    defaultValues: { agreeToTerms: false },
   });
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -199,7 +202,8 @@ const Register: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="agreeToTerms"
-                    {...register('agreeToTerms')}
+                    checked={!!watch('agreeToTerms')}
+                    onCheckedChange={(checked) => setValue('agreeToTerms', !!checked)}
                   />
                   <Label htmlFor="agreeToTerms" className="text-sm">
                     <Link
