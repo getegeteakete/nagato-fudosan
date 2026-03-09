@@ -2,152 +2,124 @@ import React, { useState, useMemo } from 'react';
 import { PROPERTIES } from '@/data/properties';
 import { Property } from '@/types/database';
 import {
-  Sparkles, Settings, Copy, Check, ChevronDown, Building2,
-  Search, RefreshCw, FileText, Instagram, Twitter, Home,
-  Bell, X, Key, AlertCircle, ExternalLink, Loader2
+  Sparkles, Check, Copy, Search, Building2, FileText,
+  Instagram, Twitter, Home, Bell, X, Key, AlertCircle,
+  Loader2, Send, Edit3, Globe
 } from 'lucide-react';
 
 const CUSTOM_KEY  = 'admin_custom_props';
 const DELETED_KEY = 'admin_deleted_props';
 const API_KEY_KEY = 'admin_anthropic_key';
+export const ARTICLES_KEY = 'site_articles';
 
-const load = <T,>(key: string, fb: T): T => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : fb; } catch { return fb; } };
+const loadLS = <T,>(key: string, fb: T): T => {
+  try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : fb; } catch { return fb; }
+};
 
-// ─── 長門市エリア情報（プロンプトで使う地域知識）───
+export interface SiteArticle {
+  id: string;
+  title: string;
+  body: string;
+  articleType: string;
+  propertyIds: string[];
+  publishedAt: string;
+  status: 'draft' | 'published';
+}
+
+// ─── 長門市エリア情報 ───
 const NAGATO_CONTEXT = `
 長門不動産は山口県長門市の不動産会社。
 長門市のエリア情報：
-- 東深川・西深川（深川地区）: 長門市の中心部。JR長門市駅、市役所、スーパーマルナカ、ニシムタ、コンビニ各社、飲食店多数。長門市立図書館近く。
-- 仙崎地区: 仙崎港・仙崎漁港。生鮮市場「仙崎かまぼこ」「くじら資料館」、仙崎海水浴場。静かな漁師町の雰囲気。
-- 三隅地区: JR山陰本線・長門三隅駅周辺。三隅川沿いの自然豊か。ホームセンターコーナン近く。田舎の落ち着いた暮らし。
-- 日置地区: 日本海沿岸。自然豊か、釣りやサーフィンのスポット。コンビニは距離あり、のんびりした生活スタイル。
-- 油谷地区: 向津具半島（むかつく）。棚田・龍宮の潮吹。農業・漁業が盛ん。移住者に人気のエリア。
+- 東深川・西深川（深川地区）: 長門市の中心部。JR長門市駅、市役所、スーパーマルナカ、ニシムタ、コンビニ各社、飲食店多数。
+- 仙崎地区: 仙崎港・仙崎漁港。くじら資料館、仙崎海水浴場。静かな漁師町の雰囲気。
+- 三隅地区: JR長門三隅駅周辺。三隅川沿いの自然豊か。ホームセンターコーナン近く。
+- 日置地区: 日本海沿岸。釣りやサーフィンのスポット。のんびりした生活スタイル。
+- 油谷地区: 向津具半島。棚田・龍宮の潮吹。移住者に人気のエリア。
 - 俵山地区: 俵山温泉郷。温泉が日常に。山間の静かな環境。
-- 深川湯本（湯本温泉）: 長門湯本温泉。観光スポット。音信川沿いの風情ある街並み。
-スーパー：マルナカ、ニシムタ、エブリイ
-コンビニ：セブンイレブン、ファミリーマート、ローソン
-医療：長門市立病院
-学校：長門市立各小中学校、山口県立長門高校
+- 深川湯本（湯本温泉）: 長門湯本温泉。音信川沿いの風情ある街並み。
+スーパー：マルナカ、ニシムタ、エブリイ / コンビニ：セブン、ファミマ、ローソン
 `;
 
 type ArticleType = 'intro' | 'sns_instagram' | 'sns_twitter' | 'life' | 'news';
 
-const ARTICLE_TYPES: { id: ArticleType; icon: any; label: string; desc: string; color: string }[] = [
-  { id: 'intro',         icon: FileText,   label: '物件紹介記事',      desc: 'ブログ・サイト掲載用',  color: 'bg-[#8a6c3e]' },
-  { id: 'sns_instagram', icon: Instagram,  label: 'Instagram投稿',     desc: '絵文字多め・ハッシュタグ付き', color: 'bg-pink-600' },
-  { id: 'sns_twitter',   icon: Twitter,    label: 'X（Twitter）投稿',   desc: '140文字以内',          color: 'bg-sky-600' },
-  { id: 'life',          icon: Home,       label: '生活情報記事',       desc: '周辺環境・暮らし方',    color: 'bg-green-700' },
-  { id: 'news',          icon: Bell,       label: '新着お知らせ',       desc: '新物件追加のお知らせ',  color: 'bg-amber-600' },
+const ARTICLE_TYPES: { id: ArticleType; icon: React.FC<any>; label: string; desc: string; color: string }[] = [
+  { id: 'intro',         icon: FileText,   label: '物件紹介記事',    desc: 'ブログ・サイト掲載用',      color: 'bg-[#8a6c3e]' },
+  { id: 'sns_instagram', icon: Instagram,  label: 'Instagram投稿',   desc: '絵文字・ハッシュタグ付き',   color: 'bg-pink-600' },
+  { id: 'sns_twitter',   icon: Twitter,    label: 'X（Twitter）投稿', desc: '140文字以内',               color: 'bg-sky-600' },
+  { id: 'life',          icon: Home,       label: '生活情報記事',    desc: '周辺環境・暮らし方',          color: 'bg-green-700' },
+  { id: 'news',          icon: Bell,       label: '新着お知らせ',    desc: '新物件追加のお知らせ',        color: 'bg-amber-600' },
 ];
 
-const buildPrompt = (type: ArticleType, properties: Property[], extraNote: string): string => {
-  const propInfoBlock = properties.map((property, i) => {
-    const priceStr = property.type === 'rent'
-      ? `月額 ${(property.rent || property.price).toLocaleString()}円（管理費 ${property.managementFee || 0}円）`
-      : `${property.price.toLocaleString()}円`;
-    return `【物件${properties.length > 1 ? i + 1 : ''}】
-- 物件名: ${property.title}
-- 種別: ${property.type === 'rent' ? '賃貸' : '売買'}
-- タイプ: ${property.propertyType}
-- 住所: ${property.address}
-- 価格: ${priceStr}
-- 面積: ${property.area}㎡ / 間取り: ${property.rooms}部屋 / 築${property.age}年
-- 駅: ${property.station || 'なし'} ${property.walkingTime ? `徒歩${property.walkingTime}分` : ''}
-- 設備: ${property.features.join('、') || 'なし'}
-- 説明: ${property.description || 'なし'}`;
-  }).join('\n\n');
-
-  const STAFF_PERSONA = `あなたは長門不動産のスタッフ・田中さん（30代女性、長門市在住10年）です。
+const STAFF_PERSONA = `あなたは長門不動産のスタッフ・田中さん（30代女性、長門市在住10年）です。
 地元への愛情があり、親しみやすく、でも情報はしっかり伝えるプロ。
 堅くなく、友人に話しかけるような温かみのある文体で書いてください。
 「〜ですよ！」「〜なんです」「ぜひ〜してみてください」など自然な語り口で。
 絶対に嘘をつかず、物件情報に基づいた内容のみ書く。`;
 
+const buildPrompt = (type: ArticleType, properties: Property[], extraNote: string): string => {
   const isMulti = properties.length > 1;
+  const propBlock = properties.map((p, i) => {
+    const price = p.type === 'rent'
+      ? `月額 ${(p.rent || p.price).toLocaleString()}円（管理費 ${p.managementFee || 0}円）`
+      : `${p.price.toLocaleString()}円`;
+    return `【物件${isMulti ? i + 1 : ''}】
+- 物件名: ${p.title} / 種別: ${p.type === 'rent' ? '賃貸' : '売買'} / 住所: ${p.address}
+- 価格: ${price} / 面積: ${p.area}㎡ / 間取り: ${p.rooms}部屋 / 築${p.age}年
+- 駅: ${p.station || 'なし'}${p.walkingTime ? ` 徒歩${p.walkingTime}分` : ''} / 設備: ${p.features.join('、') || 'なし'}
+- 説明: ${p.description || 'なし'}`;
+  }).join('\n\n');
 
-  switch (type) {
-    case 'intro':
-      return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propInfoBlock}\n\n
+  const note = extraNote ? `\n追加メモ：${extraNote}` : '';
+
+  if (type === 'intro') return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propBlock}\n\n
 ${isMulti ? `これら${properties.length}件の物件をまとめて紹介するサイト掲載用記事を書いてください。
-【構成】
-1. キャッチーな見出し（複数物件を横断したテーマで）
-2. 各物件の魅力ポイントを1〜2文でテンポよく紹介
-3. 共通するおすすめポイント・エリアの魅力
-4. スタッフからの一言
-5. お問い合わせへの誘導
+構成：①キャッチーな見出し ②各物件の魅力ポイントを1〜2文 ③共通のおすすめポイント・エリアの魅力 ④スタッフからの一言 ⑤問い合わせへの誘導
 文字数：600〜900文字` : `この物件のサイト掲載用紹介記事を書いてください。
-【構成】
-1. キャッチーな見出し（〇〇な方におすすめ！など）
-2. 物件の魅力を3〜4つのポイントで紹介
-3. 周辺環境・生活の便利さ
-4. スタッフからの一言
-5. お問い合わせへの誘導
-文字数：500〜700文字`}
-${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
+構成：①キャッチーな見出し（〇〇な方におすすめ！など）②物件の魅力3〜4ポイント ③周辺環境・生活の便利さ ④スタッフからの一言 ⑤問い合わせへの誘導
+文字数：500〜700文字`}${note}`;
 
-    case 'sns_instagram':
-      return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propInfoBlock}\n\n
-${isMulti ? `${properties.length}件の物件をまとめて紹介するInstagram投稿文を作成してください。` : 'この物件のInstagram投稿文を作成してください。'}
-【要件】
-- 冒頭は絵文字で始める
-- 物件の魅力をテンポよく（複数の場合は各物件を一言ずつ）
-- 生活イメージが湧くような表現
-- 最後にハッシュタグ10〜15個（#長門不動産 #長門市 など）
-- 全体で300文字以内
-${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
+  if (type === 'sns_instagram') return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propBlock}\n\n
+${isMulti ? `${properties.length}件の物件をまとめて` : 'この物件の'}Instagram投稿文を作成してください。
+要件：冒頭は絵文字で始める / 魅力をテンポよく / 生活イメージが湧く表現 / 最後にハッシュタグ10〜15個（#長門不動産 #長門市 など） / 全体300文字以内${note}`;
 
-    case 'sns_twitter':
-      return `${STAFF_PERSONA}\n\n${propInfoBlock}\n\n
-${isMulti ? `${properties.length}件の物件をまとめてX（Twitter）投稿文を作成してください。` : 'この物件のX（Twitter）投稿文を作成してください。'}
-【要件】
-- 140文字以内（日本語）
-- 最初に絵文字1〜2個
-- ${isMulti ? '各物件を一言ずつ、または共通の魅力を一言で' : '物件の一番の売りを一言で'}
-- #長門不動産 タグ付き
-${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
+  if (type === 'sns_twitter') return `${STAFF_PERSONA}\n\n${propBlock}\n\n
+${isMulti ? `${properties.length}件の物件をまとめて` : 'この物件の'}X（Twitter）投稿文を作成してください。
+要件：140文字以内 / 最初に絵文字1〜2個 / 一番の売りを一言で / #長門不動産 タグ付き${note}`;
 
-    case 'life':
-      return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propInfoBlock}\n\n
-${isMulti ? `これら${properties.length}件の物件エリアの生活情報記事を書いてください。エリアが近い場合はまとめて、離れている場合は各エリアを紹介してください。` : 'この物件周辺の生活情報記事を書いてください。'}
-【構成】
-1. エリア紹介（どんな雰囲気の街か）
-2. 買い物事情（スーパー・コンビニなど）
-3. 交通アクセス
-4. 休日の過ごし方（自然・観光・グルメなど）
-5. スタッフが感じる「このエリアの好きなところ」
-文字数：600〜800文字。住所から推測できる範囲で事実のみ。
-${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
+  if (type === 'life') return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propBlock}\n\n
+${isMulti ? `これら${properties.length}件の` : 'この'}物件周辺の生活情報記事を書いてください。
+構成：①エリア紹介（雰囲気） ②買い物事情 ③交通アクセス ④休日の過ごし方 ⑤スタッフが感じる好きなところ
+文字数：600〜800文字${note}`;
 
-    case 'news':
-      return `${STAFF_PERSONA}\n\n${propInfoBlock}\n\n
-${isMulti ? `${properties.length}件の新着物件のお知らせブログ記事を書いてください。` : '新着物件のお知らせブログ記事を書いてください。'}
-【構成】
-1. タイトル（「新着！〇〇エリアに〇〇が出ました！」風）
-2. 物件概要${isMulti ? '（各物件を2〜3行で）' : 'を3行で'}
-3. 「今回おすすめしたい方」（ターゲット像を具体的に）
-4. スタッフからのひとこと
-5. お問い合わせ先（TEL: 0837-22-3321、平日9〜18時）
-文字数：${isMulti ? '400〜600文字' : '300〜400文字'}。テンポよく新鮮さが伝わるように。
-${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
-  }
+  if (type === 'news') return `${STAFF_PERSONA}\n\n${propBlock}\n\n
+${isMulti ? `${properties.length}件の` : ''}新着物件のお知らせブログ記事を書いてください。
+構成：①タイトル（「新着！〇〇エリアに〇〇が出ました！」風） ②物件概要${isMulti ? '（各物件を2〜3行）' : '3行で'} ③おすすめしたい方 ④スタッフひとこと ⑤TEL: 0837-22-3321（平日9〜18時）
+文字数：${isMulti ? '400〜600文字' : '300〜400文字'}${note}`;
+
+  return '';
 };
 
 // ─── コンポーネント ───
 const AdminArticleGenerator: React.FC = () => {
-  const [apiKey, setApiKey] = useState<string>(localStorage.getItem(API_KEY_KEY) || '');
+  const [apiKey, setApiKey]           = useState<string>(localStorage.getItem(API_KEY_KEY) || '');
   const [showKeyInput, setShowKeyInput] = useState(!localStorage.getItem(API_KEY_KEY));
-  const [search, setSearch] = useState('');
+  const [search, setSearch]           = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [articleType, setArticleType] = useState<ArticleType>('intro');
-  const [extraNote, setExtraNote] = useState('');
-  const [generating, setGenerating] = useState(false);
-  const [result, setResult] = useState('');
-  const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [statMode, setStatMode] = useState(false);
+  const [extraNote, setExtraNote]     = useState('');
+  const [generating, setGenerating]   = useState(false);
+  const [result, setResult]           = useState('');
+  const [error, setError]             = useState('');
+  const [copied, setCopied]           = useState(false);
+  const [statMode, setStatMode]       = useState(false);
+  // 投稿モーダル
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [postTitle, setPostTitle]         = useState('');
+  const [postStatus, setPostStatus]       = useState<'draft' | 'published'>('published');
+  const [posted, setPosted]               = useState(false);
 
-  const deletedIds = new Set<string>(load<string[]>(DELETED_KEY, []));
-  const customProps: Property[] = load<Property[]>(CUSTOM_KEY, []);
+  const deletedIds = new Set<string>(loadLS<string[]>(DELETED_KEY, []));
+  const customProps: Property[] = loadLS<Property[]>(CUSTOM_KEY, []);
   const allProperties = useMemo(() => [
     ...PROPERTIES.filter(p => !deletedIds.has(p.id)),
     ...customProps.filter(p => !deletedIds.has(p.id)),
@@ -164,45 +136,48 @@ const AdminArticleGenerator: React.FC = () => {
   const selectedProperties = allProperties.filter(p => selectedIds.has(p.id));
 
   const toggleSelect = (id: string) => {
-    setSelectedIds(prev => {
-      const s = new Set(prev);
-      s.has(id) ? s.delete(id) : s.add(id);
-      return s;
-    });
+    setSelectedIds(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
   };
 
   const saveKey = () => {
     if (apiKey.trim()) { localStorage.setItem(API_KEY_KEY, apiKey.trim()); setShowKeyInput(false); }
   };
 
+  const extractTitle = (text: string) => {
+    const first = text.split('\n').find(l => l.trim());
+    return first?.replace(/^#+\s*/, '').replace(/\*\*/g, '').trim().slice(0, 60) || '無題の記事';
+  };
+
+  const openPostModal = () => {
+    setPostTitle(extractTitle(result));
+    setPosted(false);
+    setShowPostModal(true);
+  };
+
+  const handlePost = () => {
+    const articles: SiteArticle[] = loadLS<SiteArticle[]>(ARTICLES_KEY, []);
+    const newArticle: SiteArticle = {
+      id: `article_${Date.now()}`,
+      title: postTitle || extractTitle(result),
+      body: result,
+      articleType: statMode ? 'stat' : articleType,
+      propertyIds: [...selectedIds],
+      publishedAt: new Date().toISOString(),
+      status: postStatus,
+    };
+    localStorage.setItem(ARTICLES_KEY, JSON.stringify([newArticle, ...articles]));
+    setPosted(true);
+    setTimeout(() => setShowPostModal(false), 1800);
+  };
+
   const generate = async () => {
     if (!apiKey) { setShowKeyInput(true); return; }
     if (!statMode && selectedIds.size === 0) { setError('物件を1件以上選択してください'); return; }
-
     setGenerating(true); setResult(''); setError('');
 
-    let prompt = '';
-    if (statMode) {
-      prompt = `あなたは長門不動産のスタッフ・田中さん（30代女性、長門市在住10年）です。
-地元愛があり、親しみやすい文体で書いてください。
-
-現在の物件掲載状況：
-- 賃貸物件：${rentCount}件
-- 売買物件：${saleCount}件
-- 合計：${rentCount + saleCount}件
-
-サイトの物件掲載数についてお知らせブログ記事を書いてください。
-【内容】
-1. タイトル（「おかげさまで〇〇件掲載中！」など）
-2. 現在の掲載状況の紹介
-3. 長門市で物件を探している方へのメッセージ
-4. 賃貸・売買それぞれのおすすめポイント
-5. お問い合わせ・来店のご案内（TEL: 0837-22-3321）
-
-文字数：300〜400文字。テンポよく親しみやすく。`;
-    } else {
-      prompt = buildPrompt(articleType, selectedProperties, extraNote) || '';
-    }
+    const prompt = statMode
+      ? `${STAFF_PERSONA}\n\n現在の物件掲載状況：賃貸 ${rentCount}件 / 売買 ${saleCount}件 / 合計 ${rentCount + saleCount}件\n\nサイトの掲載数お知らせブログ記事を書いてください。\n①タイトル（「おかげさまで〇〇件掲載中！」など） ②現在の掲載状況の紹介 ③長門市で物件を探している方へのメッセージ ④賃貸・売買それぞれのおすすめポイント ⑤お問い合わせ・来店のご案内（TEL: 0837-22-3321）\n文字数：300〜400文字。テンポよく親しみやすく。`
+      : buildPrompt(articleType, selectedProperties, extraNote);
 
     try {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -213,17 +188,9 @@ const AdminArticleGenerator: React.FC = () => {
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-direct-browser-access': 'true',
         },
-        body: JSON.stringify({
-          model: 'claude-opus-4-6',
-          max_tokens: 1500,
-          messages: [{ role: 'user', content: prompt }],
-        }),
+        body: JSON.stringify({ model: 'claude-opus-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] }),
       });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error?.message || `API Error ${res.status}`);
-      }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `API Error ${res.status}`); }
       const data = await res.json();
       setResult(data.content?.[0]?.text || '');
     } catch (e: any) {
@@ -254,7 +221,7 @@ const AdminArticleGenerator: React.FC = () => {
         </button>
       </div>
 
-      {/* APIキー設定 */}
+      {/* APIキー入力 */}
       {showKeyInput && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div className="flex items-start gap-3 mb-3">
@@ -262,7 +229,7 @@ const AdminArticleGenerator: React.FC = () => {
             <div>
               <p className="text-sm font-bold text-amber-800">Anthropic APIキーが必要です</p>
               <p className="text-xs text-amber-700 mt-0.5">
-                <a href="https://console.anthropic.com/" target="_blank" rel="noreferrer" className="underline hover:no-underline">console.anthropic.com</a> でAPIキーを取得してください。キーはブラウザのlocalStorageに保存されます。
+                <a href="https://console.anthropic.com/" target="_blank" rel="noreferrer" className="underline">console.anthropic.com</a> で取得できます。キーはブラウザに保存されます。
               </p>
             </div>
           </div>
@@ -270,8 +237,7 @@ const AdminArticleGenerator: React.FC = () => {
             <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)}
               placeholder="sk-ant-api03-..." onKeyDown={e => e.key === 'Enter' && saveKey()}
               className="flex-1 border border-amber-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500 bg-white"/>
-            <button onClick={saveKey}
-              className="bg-amber-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-amber-700 flex items-center gap-2">
+            <button onClick={saveKey} className="bg-amber-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-amber-700 flex items-center gap-2">
               <Check className="h-4 w-4"/>保存
             </button>
           </div>
@@ -297,7 +263,7 @@ const AdminArticleGenerator: React.FC = () => {
             </div>
           </div>
 
-          {/* 記事タイプ（個別物件モード時） */}
+          {/* 記事タイプ */}
           {!statMode && (
             <div className="bg-white border border-[#ddd5c8] rounded-xl p-4 space-y-3">
               <p className="text-xs font-bold text-[#6b5230] uppercase tracking-wider">記事タイプ</p>
@@ -308,32 +274,28 @@ const AdminArticleGenerator: React.FC = () => {
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${t.color} flex-shrink-0`}>
                       <t.icon className="h-4 w-4 text-white"/>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className={`text-sm font-medium ${articleType === t.id ? 'text-[#8a6c3e]' : 'text-[#3d2e1e]'}`}>{t.label}</p>
                       <p className="text-xs text-[#999]">{t.desc}</p>
                     </div>
-                    {articleType === t.id && <Check className="h-4 w-4 text-[#8a6c3e] ml-auto flex-shrink-0"/>}
+                    {articleType === t.id && <Check className="h-4 w-4 text-[#8a6c3e] flex-shrink-0"/>}
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* 物件選択（個別物件モード時） */}
+          {/* 物件選択 */}
           {!statMode && (
             <div className="bg-white border border-[#ddd5c8] rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-[#6b5230] uppercase tracking-wider">物件を選択（複数可）</p>
                 <div className="flex items-center gap-2">
                   {selectedIds.size > 0 && (
-                    <span className="text-xs bg-[#8a6c3e] text-white px-2 py-0.5 rounded-full font-bold">
-                      {selectedIds.size}件選択中
-                    </span>
+                    <span className="text-xs bg-[#8a6c3e] text-white px-2 py-0.5 rounded-full font-bold">{selectedIds.size}件選択中</span>
                   )}
-                  <button onClick={() => {
-                    if (selectedIds.size === filtered.length) setSelectedIds(new Set());
-                    else setSelectedIds(new Set(filtered.map(p => p.id)));
-                  }} className="text-xs text-[#8a6c3e] hover:underline">
+                  <button onClick={() => setSelectedIds(selectedIds.size === filtered.length ? new Set() : new Set(filtered.map(p => p.id)))}
+                    className="text-xs text-[#8a6c3e] hover:underline">
                     {selectedIds.size === filtered.length ? '全解除' : '全選択'}
                   </button>
                 </div>
@@ -342,9 +304,9 @@ const AdminArticleGenerator: React.FC = () => {
                 <Search className="h-4 w-4 text-[#999] flex-shrink-0"/>
                 <input value={search} onChange={e => setSearch(e.target.value)}
                   placeholder="物件名・住所で検索..." className="flex-1 text-sm outline-none bg-transparent text-[#3d2e1e] placeholder-[#bbb]"/>
-                {search && <button onClick={() => setSearch('')} className="text-[#999] hover:text-[#666]"><X className="h-3.5 w-3.5"/></button>}
+                {search && <button onClick={() => setSearch('')} className="text-[#999]"><X className="h-3.5 w-3.5"/></button>}
               </div>
-              <div className="max-h-52 overflow-y-auto space-y-1 pr-1">
+              <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
                 {filtered.map(p => {
                   const on = selectedIds.has(p.id);
                   return (
@@ -405,10 +367,16 @@ const AdminArticleGenerator: React.FC = () => {
           <div className="flex items-center justify-between px-4 py-3 bg-[#f5f0e8] border-b border-[#e8e0d4]">
             <p className="text-sm font-bold text-[#3d2e1e]">生成された記事</p>
             {result && (
-              <button onClick={handleCopy}
-                className="flex items-center gap-1.5 text-xs bg-[#8a6c3e] text-white px-3 py-1.5 rounded-lg hover:bg-[#6e5430] transition-colors">
-                {copied ? <><Check className="h-3.5 w-3.5"/>コピー済み!</> : <><Copy className="h-3.5 w-3.5"/>全文コピー</>}
-              </button>
+              <div className="flex items-center gap-2">
+                <button onClick={handleCopy}
+                  className="flex items-center gap-1.5 text-xs border border-[#c8a96e] text-[#8a6c3e] px-3 py-1.5 rounded-lg hover:bg-[#f5f0e8] transition-colors">
+                  {copied ? <><Check className="h-3.5 w-3.5"/>コピー済み!</> : <><Copy className="h-3.5 w-3.5"/>コピー</>}
+                </button>
+                <button onClick={openPostModal}
+                  className="flex items-center gap-1.5 text-xs bg-green-700 text-white px-3 py-1.5 rounded-lg hover:bg-green-800 transition-colors font-bold">
+                  <Send className="h-3.5 w-3.5"/>投稿する
+                </button>
+              </div>
             )}
           </div>
 
@@ -420,13 +388,13 @@ const AdminArticleGenerator: React.FC = () => {
               </div>
             )}
             {!result && !error && !generating && (
-              <div className="h-full flex flex-col items-center justify-center text-[#ccc]">
+              <div className="h-full flex flex-col items-center justify-center text-[#ccc]" style={{ minHeight: '300px' }}>
                 <Sparkles className="h-12 w-12 mb-3 text-[#e8e0d4]"/>
                 <p className="text-sm">物件を選択して記事を生成してください</p>
               </div>
             )}
             {generating && (
-              <div className="h-full flex flex-col items-center justify-center text-[#8a6c3e]">
+              <div className="h-full flex flex-col items-center justify-center text-[#8a6c3e]" style={{ minHeight: '300px' }}>
                 <Loader2 className="h-10 w-10 animate-spin mb-3"/>
                 <p className="text-sm font-medium">田中さんが記事を執筆中...</p>
                 <p className="text-xs text-[#999] mt-1">少々お待ちください</p>
@@ -438,12 +406,72 @@ const AdminArticleGenerator: React.FC = () => {
           </div>
 
           {result && (
-            <div className="border-t border-[#e8e0d4] px-4 py-3 bg-[#faf7f2]">
-              <p className="text-xs text-[#999]">※ AIが生成した文章です。公開前に内容を確認・編集してください。</p>
+            <div className="border-t border-[#e8e0d4] px-4 py-3 bg-[#faf7f2] flex items-center justify-between gap-3">
+              <p className="text-xs text-[#999]">※ 公開前に内容をご確認ください。</p>
+              <button onClick={openPostModal}
+                className="flex items-center gap-1.5 text-xs bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 font-bold transition-colors">
+                <Globe className="h-3.5 w-3.5"/>サイトに投稿する
+              </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* 投稿モーダル */}
+      {showPostModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-md shadow-2xl">
+            <div className="flex items-center justify-between p-5 border-b border-[#ede8e0]">
+              <div className="flex items-center gap-2">
+                <Send className="h-5 w-5 text-green-700"/>
+                <h3 className="font-bold text-[#3d2e1e]">記事を投稿する</h3>
+              </div>
+              <button onClick={() => setShowPostModal(false)} className="text-[#999] hover:text-[#3d2e1e]"><X className="h-5 w-5"/></button>
+            </div>
+            {!posted ? (
+              <div className="p-5 space-y-4">
+                <div>
+                  <p className="text-xs font-semibold text-[#6b5230] mb-1">記事タイトル</p>
+                  <input value={postTitle} onChange={e => setPostTitle(e.target.value)}
+                    className="w-full border border-[#ddd5c8] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c8a96e]"/>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#6b5230] mb-2">公開設定</p>
+                  <div className="flex gap-3">
+                    <button onClick={() => setPostStatus('published')}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-sm font-medium transition-colors ${postStatus==='published' ? 'bg-green-700 text-white border-green-700' : 'bg-white text-[#666] border-[#ddd5c8] hover:border-green-500'}`}>
+                      <Globe className="h-4 w-4"/>公開する
+                    </button>
+                    <button onClick={() => setPostStatus('draft')}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-sm font-medium transition-colors ${postStatus==='draft' ? 'bg-[#8a6c3e] text-white border-[#8a6c3e]' : 'bg-white text-[#666] border-[#ddd5c8] hover:border-[#c8a96e]'}`}>
+                      <Edit3 className="h-4 w-4"/>下書き保存
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-[#f5f0e8] rounded-lg p-3">
+                  <p className="text-xs text-[#8a6c3e] font-medium mb-1">プレビュー（冒頭100文字）</p>
+                  <p className="text-xs text-[#666] leading-relaxed">{result.slice(0, 100)}...</p>
+                </div>
+                <button onClick={handlePost}
+                  className="w-full bg-green-700 text-white rounded-lg py-3 font-bold text-sm hover:bg-green-800 flex items-center justify-center gap-2 transition-colors">
+                  <Send className="h-4 w-4"/>
+                  {postStatus === 'published' ? '公開投稿する' : '下書きとして保存する'}
+                </button>
+              </div>
+            ) : (
+              <div className="p-8 text-center">
+                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Check className="h-8 w-8 text-green-600"/>
+                </div>
+                <p className="font-bold text-[#3d2e1e] mb-1">
+                  {postStatus === 'published' ? '公開しました！' : '下書き保存しました'}
+                </p>
+                <p className="text-xs text-[#999]">「記事管理」メニューから確認・編集できます</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

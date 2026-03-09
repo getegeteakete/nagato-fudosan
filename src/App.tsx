@@ -19,6 +19,7 @@ import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import About from "./pages/About";
+import News from "./pages/News";
 import Layout from "./components/Layout";
 
 import ScrollToTop from "./components/ScrollToTop";
@@ -48,6 +49,8 @@ const App = () => (
             <Route path="/about" element={<Layout><About /></Layout>} />
             <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
             <Route path="/terms" element={<Layout><Terms /></Layout>} />
+            <Route path="/news" element={<News />} />
+            <Route path="/news/:id" element={<News />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
