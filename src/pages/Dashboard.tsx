@@ -463,7 +463,6 @@ const UserDashboard: React.FC<{ user: any }> = ({ user }) => {
   const USER_NAV = [
     { id: 'home',      icon: Home,       label: 'マイページ',   badge: 0 },
     { id: 'favorites', icon: Heart,      label: 'お気に入り',   badge: 0 },
-    { id: 'moveout',   icon: FileText,   label: '退去申請',     badge: 0 },
     { id: 'valuation', icon: Calculator, label: '売却査定',     badge: 0 },
   ];
 
