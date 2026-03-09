@@ -40,24 +40,22 @@ const ARTICLE_TYPES: { id: ArticleType; icon: any; label: string; desc: string; 
   { id: 'news',          icon: Bell,       label: '新着お知らせ',       desc: '新物件追加のお知らせ',  color: 'bg-amber-600' },
 ];
 
-const buildPrompt = (type: ArticleType, property: Property, extraNote: string): string => {
-  const priceStr = property.type === 'rent'
-    ? `月額 ${(property.rent || property.price).toLocaleString()}円（管理費 ${property.managementFee || 0}円）`
-    : `${property.price.toLocaleString()}円`;
-  const propInfo = `
-物件情報：
+const buildPrompt = (type: ArticleType, properties: Property[], extraNote: string): string => {
+  const propInfoBlock = properties.map((property, i) => {
+    const priceStr = property.type === 'rent'
+      ? `月額 ${(property.rent || property.price).toLocaleString()}円（管理費 ${property.managementFee || 0}円）`
+      : `${property.price.toLocaleString()}円`;
+    return `【物件${properties.length > 1 ? i + 1 : ''}】
 - 物件名: ${property.title}
 - 種別: ${property.type === 'rent' ? '賃貸' : '売買'}
 - タイプ: ${property.propertyType}
 - 住所: ${property.address}
 - 価格: ${priceStr}
-- 面積: ${property.area}㎡
-- 間取り: ${property.rooms}部屋
-- 築年数: ${property.age}年
+- 面積: ${property.area}㎡ / 間取り: ${property.rooms}部屋 / 築${property.age}年
 - 駅: ${property.station || 'なし'} ${property.walkingTime ? `徒歩${property.walkingTime}分` : ''}
 - 設備: ${property.features.join('、') || 'なし'}
-- 説明: ${property.description || 'なし'}
-`;
+- 説明: ${property.description || 'なし'}`;
+  }).join('\n\n');
 
   const STAFF_PERSONA = `あなたは長門不動産のスタッフ・田中さん（30代女性、長門市在住10年）です。
 地元への愛情があり、親しみやすく、でも情報はしっかり伝えるプロ。
@@ -65,69 +63,72 @@ const buildPrompt = (type: ArticleType, property: Property, extraNote: string): 
 「〜ですよ！」「〜なんです」「ぜひ〜してみてください」など自然な語り口で。
 絶対に嘘をつかず、物件情報に基づいた内容のみ書く。`;
 
-  const region = `${NAGATO_CONTEXT}\n\n物件の住所: ${property.address}`;
+  const isMulti = properties.length > 1;
 
   switch (type) {
     case 'intro':
-      return `${STAFF_PERSONA}\n\n${region}\n\n${propInfo}\n\nこの物件のサイト掲載用紹介記事を書いてください。
+      return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propInfoBlock}\n\n
+${isMulti ? `これら${properties.length}件の物件をまとめて紹介するサイト掲載用記事を書いてください。
+【構成】
+1. キャッチーな見出し（複数物件を横断したテーマで）
+2. 各物件の魅力ポイントを1〜2文でテンポよく紹介
+3. 共通するおすすめポイント・エリアの魅力
+4. スタッフからの一言
+5. お問い合わせへの誘導
+文字数：600〜900文字` : `この物件のサイト掲載用紹介記事を書いてください。
 【構成】
 1. キャッチーな見出し（〇〇な方におすすめ！など）
 2. 物件の魅力を3〜4つのポイントで紹介
 3. 周辺環境・生活の便利さ
-4. スタッフからの一言（個人的なおすすめポイント）
-5. 問い合わせへの誘導
-
-文字数：500〜700文字程度。読みやすいように改行を入れて。
-${extraNote ? `追加メモ：${extraNote}` : ''}`;
+4. スタッフからの一言
+5. お問い合わせへの誘導
+文字数：500〜700文字`}
+${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
 
     case 'sns_instagram':
-      return `${STAFF_PERSONA}\n\n${region}\n\n${propInfo}\n\nInstagramの投稿文を作成してください。
+      return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propInfoBlock}\n\n
+${isMulti ? `${properties.length}件の物件をまとめて紹介するInstagram投稿文を作成してください。` : 'この物件のInstagram投稿文を作成してください。'}
 【要件】
 - 冒頭は絵文字で始める
-- 物件の魅力を3行程度でテンポよく
+- 物件の魅力をテンポよく（複数の場合は各物件を一言ずつ）
 - 生活イメージが湧くような表現
-- 最後にハッシュタグ10〜15個
-  (#長門不動産 #長門市 #山口県 #賃貸 #売買 など地域・物件タイプに合わせて)
+- 最後にハッシュタグ10〜15個（#長門不動産 #長門市 など）
 - 全体で300文字以内
-
-${extraNote ? `追加メモ：${extraNote}` : ''}`;
+${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
 
     case 'sns_twitter':
-      return `${STAFF_PERSONA}\n\n${propInfo}\n\nX（Twitter）の投稿文を作成してください。
+      return `${STAFF_PERSONA}\n\n${propInfoBlock}\n\n
+${isMulti ? `${properties.length}件の物件をまとめてX（Twitter）投稿文を作成してください。` : 'この物件のX（Twitter）投稿文を作成してください。'}
 【要件】
 - 140文字以内（日本語）
 - 最初に絵文字1〜2個
-- 物件の一番の売りを一言で
-- 価格と広さを必ず入れる
-- 最後に #長門不動産 のタグ
-- URLは省いてOK（「詳細はプロフのリンクから」でOK）
-
-${extraNote ? `追加メモ：${extraNote}` : ''}`;
+- ${isMulti ? '各物件を一言ずつ、または共通の魅力を一言で' : '物件の一番の売りを一言で'}
+- #長門不動産 タグ付き
+${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
 
     case 'life':
-      return `${STAFF_PERSONA}\n\n${region}\n\n${propInfo}\n\nこの物件周辺の生活情報記事を書いてください。
+      return `${STAFF_PERSONA}\n\n${NAGATO_CONTEXT}\n\n${propInfoBlock}\n\n
+${isMulti ? `これら${properties.length}件の物件エリアの生活情報記事を書いてください。エリアが近い場合はまとめて、離れている場合は各エリアを紹介してください。` : 'この物件周辺の生活情報記事を書いてください。'}
 【構成】
 1. エリア紹介（どんな雰囲気の街か）
-2. 買い物事情（スーパー・コンビニ・商店街など）
+2. 買い物事情（スーパー・コンビニなど）
 3. 交通アクセス
-4. 子育て・教育環境（もしあれば）
-5. 休日の過ごし方（自然・観光・グルメなど）
-6. スタッフが感じる「このエリアの好きなところ」
-
-文字数：600〜800文字。住所から推測できる範囲で、嘘にならない情報のみ書くこと。
-${extraNote ? `追加メモ：${extraNote}` : ''}`;
+4. 休日の過ごし方（自然・観光・グルメなど）
+5. スタッフが感じる「このエリアの好きなところ」
+文字数：600〜800文字。住所から推測できる範囲で事実のみ。
+${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
 
     case 'news':
-      return `${STAFF_PERSONA}\n\n${propInfo}\n\n新着物件のお知らせブログ記事を書いてください。
+      return `${STAFF_PERSONA}\n\n${propInfoBlock}\n\n
+${isMulti ? `${properties.length}件の新着物件のお知らせブログ記事を書いてください。` : '新着物件のお知らせブログ記事を書いてください。'}
 【構成】
 1. タイトル（「新着！〇〇エリアに〇〇が出ました！」風）
-2. 物件概要を3行で
+2. 物件概要${isMulti ? '（各物件を2〜3行で）' : 'を3行で'}
 3. 「今回おすすめしたい方」（ターゲット像を具体的に）
 4. スタッフからのひとこと
 5. お問い合わせ先（TEL: 0837-22-3321、平日9〜18時）
-
-文字数：300〜400文字。テンポよく、新鮮さが伝わるように。
-${extraNote ? `追加メモ：${extraNote}` : ''}`;
+文字数：${isMulti ? '400〜600文字' : '300〜400文字'}。テンポよく新鮮さが伝わるように。
+${extraNote ? `\n追加メモ：${extraNote}` : ''}`;
   }
 };
 
@@ -136,7 +137,7 @@ const AdminArticleGenerator: React.FC = () => {
   const [apiKey, setApiKey] = useState<string>(localStorage.getItem(API_KEY_KEY) || '');
   const [showKeyInput, setShowKeyInput] = useState(!localStorage.getItem(API_KEY_KEY));
   const [search, setSearch] = useState('');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [articleType, setArticleType] = useState<ArticleType>('intro');
   const [extraNote, setExtraNote] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -160,7 +161,15 @@ const AdminArticleGenerator: React.FC = () => {
     return !q || p.title.toLowerCase().includes(q) || p.address.toLowerCase().includes(q);
   }), [allProperties, search]);
 
-  const selected = allProperties.find(p => p.id === selectedId);
+  const selectedProperties = allProperties.filter(p => selectedIds.has(p.id));
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const s = new Set(prev);
+      s.has(id) ? s.delete(id) : s.add(id);
+      return s;
+    });
+  };
 
   const saveKey = () => {
     if (apiKey.trim()) { localStorage.setItem(API_KEY_KEY, apiKey.trim()); setShowKeyInput(false); }
@@ -168,8 +177,7 @@ const AdminArticleGenerator: React.FC = () => {
 
   const generate = async () => {
     if (!apiKey) { setShowKeyInput(true); return; }
-    const target = statMode ? null : selected;
-    if (!statMode && !target) { setError('物件を選択してください'); return; }
+    if (!statMode && selectedIds.size === 0) { setError('物件を1件以上選択してください'); return; }
 
     setGenerating(true); setResult(''); setError('');
 
@@ -192,8 +200,8 @@ const AdminArticleGenerator: React.FC = () => {
 5. お問い合わせ・来店のご案内（TEL: 0837-22-3321）
 
 文字数：300〜400文字。テンポよく親しみやすく。`;
-    } else if (target) {
-      prompt = buildPrompt(articleType, target, extraNote);
+    } else {
+      prompt = buildPrompt(articleType, selectedProperties, extraNote) || '';
     }
 
     try {
@@ -314,29 +322,64 @@ const AdminArticleGenerator: React.FC = () => {
           {/* 物件選択（個別物件モード時） */}
           {!statMode && (
             <div className="bg-white border border-[#ddd5c8] rounded-xl p-4 space-y-3">
-              <p className="text-xs font-bold text-[#6b5230] uppercase tracking-wider">物件を選択</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold text-[#6b5230] uppercase tracking-wider">物件を選択（複数可）</p>
+                <div className="flex items-center gap-2">
+                  {selectedIds.size > 0 && (
+                    <span className="text-xs bg-[#8a6c3e] text-white px-2 py-0.5 rounded-full font-bold">
+                      {selectedIds.size}件選択中
+                    </span>
+                  )}
+                  <button onClick={() => {
+                    if (selectedIds.size === filtered.length) setSelectedIds(new Set());
+                    else setSelectedIds(new Set(filtered.map(p => p.id)));
+                  }} className="text-xs text-[#8a6c3e] hover:underline">
+                    {selectedIds.size === filtered.length ? '全解除' : '全選択'}
+                  </button>
+                </div>
+              </div>
               <div className="flex items-center gap-2 bg-[#f5f0e8] rounded-lg px-3 py-2">
                 <Search className="h-4 w-4 text-[#999] flex-shrink-0"/>
                 <input value={search} onChange={e => setSearch(e.target.value)}
                   placeholder="物件名・住所で検索..." className="flex-1 text-sm outline-none bg-transparent text-[#3d2e1e] placeholder-[#bbb]"/>
+                {search && <button onClick={() => setSearch('')} className="text-[#999] hover:text-[#666]"><X className="h-3.5 w-3.5"/></button>}
               </div>
-              <div className="max-h-52 overflow-y-auto space-y-1">
-                {filtered.map(p => (
-                  <button key={p.id} onClick={() => setSelectedId(p.id)}
-                    className={`w-full flex items-center gap-3 p-2.5 rounded-lg border text-left transition-all ${selectedId === p.id ? 'border-[#c8a96e] bg-[#faf7f2]' : 'border-transparent hover:bg-[#f5f0e8]'}`}>
-                    {p.images?.[0]
-                      ? <img src={p.images[0]} alt="" className="w-10 h-8 object-cover rounded border border-[#e0d8cc] flex-shrink-0" onError={e => (e.target as HTMLImageElement).style.display='none'}/>
-                      : <div className="w-10 h-8 bg-[#f0ebe3] rounded flex items-center justify-center flex-shrink-0"><Building2 className="h-3.5 w-3.5 text-[#ccc]"/></div>}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-[#3d2e1e] truncate">{p.title}</p>
-                      <p className="text-xs text-[#999] truncate">{p.address}</p>
-                    </div>
-                    <span className={`text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${p.type==='rent' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
-                      {p.type==='rent' ? '賃貸' : '売買'}
-                    </span>
-                  </button>
-                ))}
+              <div className="max-h-52 overflow-y-auto space-y-1 pr-1">
+                {filtered.map(p => {
+                  const on = selectedIds.has(p.id);
+                  return (
+                    <button key={p.id} onClick={() => toggleSelect(p.id)}
+                      className={`w-full flex items-center gap-3 p-2.5 rounded-lg border text-left transition-all ${on ? 'border-[#c8a96e] bg-[#faf7f2]' : 'border-transparent hover:bg-[#f5f0e8]'}`}>
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${on ? 'bg-[#8a6c3e] border-[#8a6c3e]' : 'border-[#ccc]'}`}>
+                        {on && <Check className="h-2.5 w-2.5 text-white"/>}
+                      </div>
+                      {p.images?.[0]
+                        ? <img src={p.images[0]} alt="" className="w-10 h-8 object-cover rounded border border-[#e0d8cc] flex-shrink-0" onError={e => (e.target as HTMLImageElement).style.display='none'}/>
+                        : <div className="w-10 h-8 bg-[#f0ebe3] rounded flex items-center justify-center flex-shrink-0"><Building2 className="h-3.5 w-3.5 text-[#ccc]"/></div>}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-[#3d2e1e] truncate">{p.title}</p>
+                        <p className="text-xs text-[#999] truncate">{p.address}</p>
+                      </div>
+                      <span className={`text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${p.type==='rent' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                        {p.type==='rent' ? '賃貸' : '売買'}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
+              {selectedIds.size > 0 && (
+                <div className="bg-[#f5f0e8] rounded-lg p-2.5 flex flex-wrap gap-1.5">
+                  {[...selectedIds].map(id => {
+                    const p = allProperties.find(x => x.id === id);
+                    return p ? (
+                      <span key={id} className="flex items-center gap-1 bg-[#8a6c3e] text-white text-xs px-2 py-1 rounded-full">
+                        <span className="max-w-[100px] truncate">{p.title}</span>
+                        <button onClick={() => toggleSelect(id)} className="hover:text-red-200 flex-shrink-0"><X className="h-3 w-3"/></button>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
             </div>
           )}
 
@@ -349,7 +392,7 @@ const AdminArticleGenerator: React.FC = () => {
           </div>
 
           {/* 生成ボタン */}
-          <button onClick={generate} disabled={generating || (!statMode && !selectedId)}
+          <button onClick={generate} disabled={generating || (!statMode && selectedIds.size === 0)}
             className="w-full bg-gradient-to-r from-[#8a6c3e] to-[#6b5230] text-white rounded-xl py-3.5 font-bold text-sm hover:opacity-90 disabled:opacity-40 flex items-center justify-center gap-2.5 shadow-md transition-all">
             {generating
               ? <><Loader2 className="h-5 w-5 animate-spin"/>生成中...</>
