@@ -154,8 +154,8 @@ const AdminArticleGenerator: React.FC = () => {
     setShowPostModal(true);
   };
 
-  const handlePost = () => {
-    const articles: SiteArticle[] = loadLS<SiteArticle[]>(ARTICLES_KEY, []);
+  const handlePost = async () => {
+    const { saveArticle } = await import('@/lib/articleStore');
     const newArticle: SiteArticle = {
       id: `article_${Date.now()}`,
       title: postTitle || extractTitle(result),
@@ -165,7 +165,7 @@ const AdminArticleGenerator: React.FC = () => {
       publishedAt: new Date().toISOString(),
       status: postStatus,
     };
-    localStorage.setItem(ARTICLES_KEY, JSON.stringify([newArticle, ...articles]));
+    await saveArticle(newArticle);
     setPosted(true);
     setTimeout(() => setShowPostModal(false), 1800);
   };

@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
-import { ARTICLES_KEY, SiteArticle } from './AdminArticleGenerator';
+import React, { useState, useEffect } from 'react';
+import { SiteArticle } from './AdminArticleGenerator';
+import { getArticles, saveArticle, deleteArticle } from '@/lib/articleStore';
 import { PROPERTIES } from '@/data/properties';
 import {
   FileText, Globe, Edit3, Trash2, Eye, EyeOff,
-  X, Check, ExternalLink, Clock, Building2
+  X, Check, ExternalLink, Clock, Building2, RefreshCw
 } from 'lucide-react';
-
-const loadLS = <T,>(key: string, fb: T): T => {
-  try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : fb; } catch { return fb; }
-};
 
 const ARTICLE_TYPE_LABELS: Record<string, string> = {
   intro: '物件紹介', sns_instagram: 'Instagram', sns_twitter: 'X/Twitter',
@@ -16,28 +13,43 @@ const ARTICLE_TYPE_LABELS: Record<string, string> = {
 };
 
 const AdminArticleManager: React.FC = () => {
-  const [articles, setArticles] = useState<SiteArticle[]>(() => loadLS<SiteArticle[]>(ARTICLES_KEY, []));
+  const [articles, setArticles] = useState<SiteArticle[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editTarget, setEditTarget] = useState<SiteArticle | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-  const save = (next: SiteArticle[]) => {
-    setArticles(next);
-    localStorage.setItem(ARTICLES_KEY, JSON.stringify(next));
+  const load = async () => {
+    setLoading(true);
+    const all = await getArticles();
+    setArticles(all);
+    setLoading(false);
   };
 
-  const toggleStatus = (id: string) =>
-    save(articles.map(a => a.id === id ? { ...a, status: a.status === 'published' ? 'draft' : 'published' } : a));
+  useEffect(() => { load(); }, []);
 
-  const handleDelete = (id: string) => { save(articles.filter(a => a.id !== id)); setDeleteConfirm(null); };
+  const toggleStatus = async (id: string) => {
+    const article = articles.find(a => a.id === id);
+    if (!article) return;
+    const updated = { ...article, status: article.status === 'published' ? 'draft' as const : 'published' as const };
+    await saveArticle(updated);
+    setArticles(articles.map(a => a.id === id ? updated : a));
+  };
 
-  const handleSaveEdit = () => {
+  const handleDelete = async (id: string) => {
+    await deleteArticle(id);
+    setArticles(articles.filter(a => a.id !== id));
+    setDeleteConfirm(null);
+  };
+
+  const handleSaveEdit = async () => {
     if (!editTarget) return;
-    save(articles.map(a => a.id === editTarget.id ? editTarget : a));
+    await saveArticle(editTarget);
+    setArticles(articles.map(a => a.id === editTarget.id ? editTarget : a));
     setEditTarget(null);
   };
 
   const published = articles.filter(a => a.status === 'published').length;
-  const drafts    = articles.filter(a => a.status === 'draft').length;
+  const drafts = articles.filter(a => a.status === 'draft').length;
 
   return (
     <div className="space-y-5">
@@ -48,13 +60,20 @@ const AdminArticleManager: React.FC = () => {
           <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">公開 {published}件</span>
           {drafts > 0 && <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">下書き {drafts}件</span>}
         </div>
-        <a href="/news" target="_blank" rel="noreferrer"
-          className="flex items-center gap-1.5 text-xs border border-[#ddd5c8] text-[#666] px-3 py-1.5 rounded-lg hover:bg-[#f5f0e8] transition-colors">
-          <ExternalLink className="h-3.5 w-3.5"/>公開ページを見る
-        </a>
+        <div className="flex gap-2">
+          <button onClick={load} className="flex items-center gap-1.5 text-xs border border-[#ddd5c8] text-[#666] px-3 py-1.5 rounded-lg hover:bg-[#f5f0e8] transition-colors">
+            <RefreshCw className="h-3.5 w-3.5"/>更新
+          </button>
+          <a href="/news" target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 text-xs border border-[#ddd5c8] text-[#666] px-3 py-1.5 rounded-lg hover:bg-[#f5f0e8] transition-colors">
+            <ExternalLink className="h-3.5 w-3.5"/>公開ページを見る
+          </a>
+        </div>
       </div>
 
-      {articles.length === 0 ? (
+      {loading ? (
+        <div className="bg-white border border-[#ddd5c8] rounded-xl py-10 text-center text-[#999] text-sm">読み込み中...</div>
+      ) : articles.length === 0 ? (
         <div className="bg-white border border-[#ddd5c8] rounded-xl py-16 text-center">
           <FileText className="h-12 w-12 text-[#ddd] mx-auto mb-3"/>
           <p className="text-[#999] mb-2">まだ記事がありません</p>
@@ -82,15 +101,15 @@ const AdminArticleManager: React.FC = () => {
                     </div>
                     <h3 className="font-bold text-[#3d2e1e] text-sm mb-1 truncate">{article.title}</h3>
                     <p className="text-xs text-[#999] leading-relaxed line-clamp-2">
-                      {article.body.replace(/\*\*/g, '').replace(/^#+\s*/gm, '').slice(0, 120)}...
+                      {article.body.replace(/\*\*/g,'').replace(/^#+\s*/gm,'').slice(0,120)}...
                     </p>
                     {relatedProps.length > 0 && (
                       <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                         <Building2 className="h-3 w-3 text-[#c8a96e]"/>
-                        {relatedProps.slice(0, 3).map(p => (
+                        {relatedProps.slice(0,3).map(p => (
                           <span key={p.id} className="text-xs bg-[#faf7f2] border border-[#e8e0d4] text-[#8a6c3e] px-1.5 py-0.5 rounded">{p.title}</span>
                         ))}
-                        {relatedProps.length > 3 && <span className="text-xs text-[#999]">+{relatedProps.length - 3}件</span>}
+                        {relatedProps.length > 3 && <span className="text-xs text-[#999]">+{relatedProps.length-3}件</span>}
                       </div>
                     )}
                   </div>
@@ -143,10 +162,10 @@ const AdminArticleManager: React.FC = () => {
               <div>
                 <p className="text-xs font-semibold text-[#6b5230] mb-2">公開設定</p>
                 <div className="flex gap-3">
-                  {(['published', 'draft'] as const).map(s => (
+                  {(['published','draft'] as const).map(s => (
                     <button key={s} onClick={() => setEditTarget({ ...editTarget, status: s })}
-                      className={`flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors ${editTarget.status === s ? (s === 'published' ? 'bg-green-700 text-white border-green-700' : 'bg-[#8a6c3e] text-white border-[#8a6c3e]') : 'bg-white text-[#666] border-[#ddd5c8]'}`}>
-                      {s === 'published' ? '公開' : '下書き'}
+                      className={`flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors ${editTarget.status===s ? (s==='published' ? 'bg-green-700 text-white border-green-700' : 'bg-[#8a6c3e] text-white border-[#8a6c3e]') : 'bg-white text-[#666] border-[#ddd5c8]'}`}>
+                      {s==='published' ? '公開' : '下書き'}
                     </button>
                   ))}
                 </div>
