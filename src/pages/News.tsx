@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ARTICLES_KEY, SiteArticle } from '@/components/AdminArticleGenerator';
+import { SAMPLE_ARTICLES } from '@/data/sampleArticles';
 import { PROPERTIES } from '@/data/properties';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -17,7 +18,8 @@ const ARTICLE_TYPE_LABELS: Record<string, string> = {
 
 // ─── 記事一覧ページ ───
 const NewsList: React.FC = () => {
-  const articles = loadLS<SiteArticle[]>(ARTICLES_KEY, []).filter(a => a.status === 'published');
+  const stored = loadLS<SiteArticle[]>(ARTICLES_KEY, []).filter(a => a.status === 'published');
+  const articles = stored.length > 0 ? stored : SAMPLE_ARTICLES;
 
   return (
     <div className="min-h-screen bg-white">
@@ -84,7 +86,8 @@ const NewsList: React.FC = () => {
 // ─── 記事詳細ページ ───
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const articles = loadLS<SiteArticle[]>(ARTICLES_KEY, []);
+  const stored = loadLS<SiteArticle[]>(ARTICLES_KEY, []);
+  const articles = stored.length > 0 ? stored : SAMPLE_ARTICLES;
   const article = articles.find(a => a.id === id && a.status === 'published');
   const relatedProps = article ? PROPERTIES.filter(p => article.propertyIds.includes(p.id)) : [];
 

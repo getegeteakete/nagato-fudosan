@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ARTICLES_KEY, SiteArticle } from './AdminArticleGenerator';
+import { SAMPLE_ARTICLES } from '@/data/sampleArticles';
 import { Bell, ArrowRight, Clock, ChevronRight } from 'lucide-react';
 
 const loadLS = <T,>(key: string, fb: T): T => {
@@ -18,11 +19,8 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 const TopNewsSection: React.FC = () => {
-  const articles = loadLS<SiteArticle[]>(ARTICLES_KEY, [])
-    .filter(a => a.status === 'published')
-    .slice(0, 5);
-
-  if (articles.length === 0) return null;
+  const stored = loadLS<SiteArticle[]>(ARTICLES_KEY, []).filter(a => a.status === 'published');
+  const articles = (stored.length > 0 ? stored : SAMPLE_ARTICLES).slice(0, 5);
 
   return (
     <section className="py-12 bg-white">

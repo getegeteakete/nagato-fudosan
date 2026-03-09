@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ARTICLES_KEY, SiteArticle } from './AdminArticleGenerator';
+import { SAMPLE_ARTICLES } from '@/data/sampleArticles';
 import { PROPERTIES } from '@/data/properties';
 import { ArrowRight, Clock, Building2, BookOpen } from 'lucide-react';
 
@@ -17,7 +18,7 @@ const TYPE_LABELS: Record<string, string> = {
 // 記事の先頭行をタイトルから除いた本文を取得
 const getBody = (body: string) => body.replace(/\*\*/g, '').replace(/^#+\s*.+\n?/, '').replace(/^#+\s*/gm, '').trim();
 
-// OGP的なサムネイル：関連物件の画像 or デフォルトグラデ
+// サムネイル取得
 const getThumb = (article: SiteArticle): string | null => {
   for (const id of article.propertyIds) {
     const p = PROPERTIES.find(x => x.id === id);
@@ -34,11 +35,9 @@ const GRADIENT_BG = [
 ];
 
 const TopArticleSection: React.FC = () => {
-  const articles = loadLS<SiteArticle[]>(ARTICLES_KEY, [])
-    .filter(a => a.status === 'published' && INTRO_TYPES.includes(a.articleType))
-    .slice(0, 6);
-
-  if (articles.length === 0) return null;
+  const stored = loadLS<SiteArticle[]>(ARTICLES_KEY, [])
+    .filter(a => a.status === 'published' && INTRO_TYPES.includes(a.articleType));
+  const articles = (stored.length > 0 ? stored : SAMPLE_ARTICLES.filter(a => INTRO_TYPES.includes(a.articleType))).slice(0, 6);
 
   const [featured, ...rest] = articles;
 
