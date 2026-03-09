@@ -5,10 +5,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { PropertyCard } from '@/components/PropertyCard';
 import { Button } from '@/components/ui/button';
 import AdminPropertyManager from '@/components/AdminPropertyManager';
+import AdminArticleGenerator from '@/components/AdminArticleGenerator';
 import {
   User, Heart, LogOut, Home, FileText, Calculator,
   ChevronRight, Menu, Building2, Bell, Users,
-  ClipboardList, CheckCircle, Mail, Phone, Eye, X
+  ClipboardList, CheckCircle, Mail, Phone, Eye, X, Sparkles
 } from 'lucide-react';
 
 // ──────────── 型 ────────────
@@ -110,6 +111,7 @@ const AdminDashboard: React.FC<{ user: any }> = ({ user }) => {
   const ADMIN_NAV = [
     { id: 'overview',    icon: Home,          label: 'ダッシュボード', badge: 0 },
     { id: 'properties',  icon: Building2,     label: '物件管理',       badge: 0 },
+    { id: 'articles',    icon: Sparkles,      label: 'AI記事生成',     badge: 0 },
     { id: 'moveouts',    icon: ClipboardList, label: '退去申請受付',   badge: unreadMoveouts },
     { id: 'valuations',  icon: Calculator,    label: '査定依頼一覧',   badge: unreadValuations },
     { id: 'members',     icon: Users,         label: '会員一覧',       badge: 0 },
@@ -157,6 +159,9 @@ const AdminDashboard: React.FC<{ user: any }> = ({ user }) => {
 
       // ── 物件管理 ──
       case 'properties': return <AdminPropertyManager />;
+
+      // ── AI記事生成 ──
+      case 'articles': return <AdminArticleGenerator />;
 
       // ── 概要 ──
       case 'overview': return (

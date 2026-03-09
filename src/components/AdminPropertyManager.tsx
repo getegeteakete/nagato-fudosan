@@ -211,6 +211,7 @@ const AdminPropertyManager: React.FC = () => {
   const [csvRows, setCsvRows] = useState<CsvRow[]>([]);
   const [csvImported, setCsvImported] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageUploadRef = useRef<HTMLInputElement>(null);
 
   const handleCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
@@ -230,6 +231,33 @@ const AdminPropertyManager: React.FC = () => {
     const next = [...customProps, ...valid.map(r => r.data!)];
     setCustomProps(next); save(CUSTOM_KEY, next);
     setCsvImported(true);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      // 1MB超は圧縮
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const src = ev.target?.result as string;
+        if (file.size > 800_000) {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ratio = Math.min(1, 1200 / Math.max(img.width, img.height));
+            canvas.width = img.width * ratio; canvas.height = img.height * ratio;
+            canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+            f('images', [...(form.images || []), canvas.toDataURL('image/jpeg', 0.8)]);
+          };
+          img.src = src;
+        } else {
+          f('images', [...(form.images || []), src]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
   };
 
   // 全物件（マスター＋カスタム、削除済み除外）
@@ -559,27 +587,37 @@ const AdminPropertyManager: React.FC = () => {
                   placeholder="物件の特徴や周辺環境など"/>
               </div>
 
-              {/* 画像URL */}
+              {/* 画像 */}
               <div>
-                <Label>物件画像URL</Label>
+                <Label>物件画像</Label>
+                <input ref={imageUploadRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden"/>
                 <div className="flex gap-2 mb-2">
+                  <button type="button" onClick={() => imageUploadRef.current?.click()}
+                    className="flex items-center gap-2 bg-[#8a6c3e] text-white px-3 py-2 rounded-lg text-sm hover:bg-[#6e5430] flex-shrink-0">
+                    <Upload className="h-4 w-4"/>画像をアップロード
+                  </button>
                   <input value={form.imageUrlInput||''} onChange={e => f('imageUrlInput', e.target.value)}
-                    placeholder="https://example.com/image.jpg" onKeyDown={e => e.key==='Enter' && (e.preventDefault(), addImageUrl())}
+                    placeholder="または画像URLを入力..." onKeyDown={e => e.key==='Enter' && (e.preventDefault(), addImageUrl())}
                     className="flex-1 border border-[#ddd5c8] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#c8a96e]"/>
                   <button type="button" onClick={addImageUrl}
-                    className="bg-[#8a6c3e] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#6e5430] flex items-center gap-1">
-                    <Plus className="h-4 w-4"/>追加
+                    className="bg-white border border-[#ddd5c8] text-[#666] px-3 py-2 rounded-lg text-sm hover:bg-[#f5f0e8] flex-shrink-0">
+                    追加
                   </button>
                 </div>
+                <p className="text-xs text-[#999] mb-2">JPG・PNG・WebP対応。複数同時選択可。1MB超は自動圧縮。</p>
                 {(form.images||[]).length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {(form.images as string[]).map((url, idx) => (
                       <div key={idx} className="relative group">
-                        <img src={url} alt="" className="w-20 h-16 object-cover rounded border border-[#e0d8cc]" onError={e => (e.target as HTMLImageElement).src='https://via.placeholder.com/80x64?text=Error'}/>
+                        <img src={url} alt="" className="w-20 h-16 object-cover rounded border border-[#e0d8cc]"
+                          onError={e => (e.target as HTMLImageElement).src='https://via.placeholder.com/80x64?text=Error'}/>
                         <button type="button" onClick={() => removeImage(idx)}
                           className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <X className="h-3 w-3"/>
                         </button>
+                        <span className="absolute bottom-0 left-0 right-0 text-center text-[9px] bg-black/40 text-white rounded-b">
+                          {url.startsWith('data:') ? 'アップロード済' : 'URL'}
+                        </span>
                       </div>
                     ))}
                   </div>
