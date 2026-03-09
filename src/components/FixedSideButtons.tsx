@@ -1,27 +1,6 @@
 import { Link } from "react-router-dom";
 import { Building2, Calculator, MessageCircle, Clock } from "lucide-react";
-
-const getBusinessStatus = () => {
-  const now = new Date();
-  const day = now.getDay();
-  const time = now.getHours() * 60 + now.getMinutes();
-  const weekOfMonth = Math.ceil(now.getDate() / 7);
-
-  const isRegularClosed =
-    day === 3 ||
-    (day === 2 && weekOfMonth === 2) ||
-    (day === 0 && weekOfMonth === 3);
-
-  if (isRegularClosed) return { open: false, label: "本日定休日", dot: "bg-red-400" };
-
-  if (day >= 1 && day <= 5) {
-    if (time >= 9 * 60 && time < 18 * 60) return { open: true, label: "営業中 9:00-18:00", dot: "bg-green-400" };
-    return { open: false, label: "本日は営業終了", dot: "bg-gray-400" };
-  } else {
-    if (time >= 10 * 60 && time < 17 * 60) return { open: true, label: "営業中 10:00-17:00", dot: "bg-green-400" };
-    return { open: false, label: "本日は営業終了", dot: "bg-gray-400" };
-  }
-};
+import { getBusinessStatus } from "@/lib/businessHours";
 
 const FixedSideButtons = () => {
   const status = getBusinessStatus();
@@ -61,11 +40,10 @@ const FixedSideButtons = () => {
       {/* スマホ版: 下部固定 */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg">
         {/* 営業状態バー */}
-        <div className={`flex items-center justify-center gap-2 py-1.5 px-3 text-xs font-medium text-white ${status.open ? 'bg-green-700' : 'bg-gray-500'}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${status.dot} ${status.open ? 'animate-pulse' : ''}`}></span>
-          <Clock className="h-3 w-3" />
-          <span>{status.label}</span>
-          <span className="text-white/60">｜定休：水・第2火・第3日</span>
+        <div className={`flex items-center justify-center gap-2 py-1.5 px-3 text-xs font-medium text-white ${status.open ? 'bg-green-700' : status.color}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${status.dot} ${status.open ? 'animate-pulse' : ''} flex-shrink-0`}></span>
+          <Clock className="h-3 w-3 flex-shrink-0" />
+          <span className="truncate">{status.label}</span>
         </div>
         {/* ナビボタン */}
         <div className="flex justify-around items-center py-1.5 px-4">

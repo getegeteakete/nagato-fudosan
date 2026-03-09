@@ -1,40 +1,7 @@
 import { Search, Calculator, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-// 営業時間ロジック
-const getBusinessStatus = () => {
-  const now = new Date();
-  const day = now.getDay(); // 0=日, 1=月, 2=火, 3=水, 4=木, 5=金, 6=土
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-  const time = hour * 60 + minute;
-  const date = now.getDate();
-
-  // 第何週かを計算
-  const weekOfMonth = Math.ceil(date / 7);
-
-  // 定休日判定: 毎週水曜・第2火曜・第3日曜
-  const isRegularClosed =
-    day === 3 || // 水曜
-    (day === 2 && weekOfMonth === 2) || // 第2火曜
-    (day === 0 && weekOfMonth === 3);   // 第3日曜
-
-  if (isRegularClosed) return { open: false, label: "本日定休日", color: "bg-red-600" };
-
-  // 営業時間チェック
-  if (day >= 1 && day <= 5) {
-    // 平日 9:00〜18:00
-    if (time >= 9 * 60 && time < 18 * 60) return { open: true, label: "営業中", color: "bg-green-600" };
-    if (time >= 8 * 60 && time < 9 * 60) return { open: false, label: "本日 9:00〜18:00", color: "bg-amber-600" };
-    return { open: false, label: "本日は営業終了", color: "bg-gray-600" };
-  } else {
-    // 土日 10:00〜17:00
-    if (time >= 10 * 60 && time < 17 * 60) return { open: true, label: "営業中", color: "bg-green-600" };
-    if (time >= 9 * 60 && time < 10 * 60) return { open: false, label: "本日 10:00〜17:00", color: "bg-amber-600" };
-    return { open: false, label: "本日は営業終了", color: "bg-gray-600" };
-  }
-};
+import { getBusinessStatus } from "@/lib/businessHours";
 
 const Hero = () => {
   const status = getBusinessStatus();
