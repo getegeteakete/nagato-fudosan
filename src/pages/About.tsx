@@ -45,13 +45,15 @@ const About = () => {
   return (
     <div className="container py-16">
       {/* ヒーローセクション */}
-      <div className="text-center mb-16">
-        <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">ABOUT US</p>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">会社案内</h1>
-        <div className="w-16 h-1 bg-green-700 mx-auto mb-6 rounded-full"></div>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          おかげさまで地元に根付いて48年。長門市の賃貸・物件・不動産売買・空き家管理・不動産管理はお任せください。
-        </p>
+      <div className="mb-12 -mx-4">
+        <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+          <div>
+            <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">ABOUT US</p>
+            <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">会社案内</h1>
+          </div>
+          <p className="text-sm text-gray-500 ml-auto hidden md:block">おかげさまで地元に根付いて48年</p>
+        </div>
       </div>
 
       {/* 会社概要 */}
@@ -116,7 +118,15 @@ const About = () => {
 
       {/* 実績・数値 */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-2">実績・数値</h2>
+        <div className="mb-6 -mx-4">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">ACHIEVEMENTS</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">実績・数値</h2>
+            </div>
+          </div>
+        </div>
         <div className="w-12 h-1 bg-green-700 mx-auto mb-12 rounded-full"></div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
@@ -135,7 +145,15 @@ const About = () => {
 
       {/* 企業理念・価値観 */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">企業理念・価値観</h2>
+        <div className="mb-10 -mx-4">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">PHILOSOPHY</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">企業理念・価値観</h2>
+            </div>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {values.map((value, index) => (
             <Card key={index}>
@@ -157,7 +175,15 @@ const About = () => {
 
       {/* 沿革 */}
       <div className="mb-16">
-        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">沿革</h2>
+        <div className="mb-10 -mx-4">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">HISTORY</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">沿革</h2>
+            </div>
+          </div>
+        </div>
         <div className="space-y-6">
           {history.map((item, index) => (
             <div key={index} className="flex items-start space-x-6">

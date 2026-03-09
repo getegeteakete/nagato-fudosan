@@ -33,13 +33,15 @@ const Contact = () => {
   return (
     <div className="container py-16">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">CONTACT</p>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">お問い合わせ</h1>
-          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
-          <p className="text-lg text-gray-600">
-            ご質問やご相談がございましたら、お気軽にお問い合わせください。
-          </p>
+        <div className="mb-10 -mx-4">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">CONTACT</p>
+              <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">お問い合わせ</h1>
+            </div>
+            <p className="text-sm text-gray-500 ml-auto hidden md:block">ご質問・ご相談はお気軽に</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

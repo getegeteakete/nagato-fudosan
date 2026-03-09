@@ -22,15 +22,15 @@ const CompanyHighlights = () => {
   return (
     <section className="py-20 bg-gradient-to-b from-background to-secondary/10">
       <div className="container">
-        <div className="text-center mb-16">
-          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">WHY CHOOSE US</p>
-          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-4 text-gray-900">
-            安心と信頼の理由
-          </h2>
-          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            地元・長門市に根付いて48年。お客様から選ばれ続ける理由があります
-          </p>
+        <div className="mb-12 -mx-4 md:-mx-6 lg:-mx-8">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">WHY CHOOSE US</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">安心と信頼の理由</h2>
+            </div>
+            <p className="text-sm text-gray-500 ml-auto hidden md:block">地元・長門市に根付いて48年</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">

@@ -28,19 +28,19 @@ const TopNewsSection: React.FC = () => {
     <section className="py-12 bg-white">
       <div className="max-w-6xl mx-auto px-4">
         {/* セクションヘッダー */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-1 h-5 bg-green-700 rounded-full"/>
-              <p className="text-xs font-bold text-green-700 tracking-widest uppercase">News & Info</p>
+        <div className="mb-8 -mx-4 md:-mx-6 lg:-mx-8">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">News & Info</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">新着お知らせ</h2>
             </div>
-            <h2 className="text-2xl font-bold text-[#1a1a1a]">新着お知らせ</h2>
+            <Link to="/news"
+              className="ml-auto flex items-center gap-1.5 text-sm text-green-700 font-semibold hover:text-green-900 transition-colors group flex-shrink-0">
+              すべて見る
+              <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform"/>
+            </Link>
           </div>
-          <Link to="/news"
-            className="flex items-center gap-1.5 text-sm text-green-700 font-semibold hover:text-green-900 transition-colors group">
-            すべて見る
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform"/>
-          </Link>
         </div>
 
         {/* お知らせリスト */}

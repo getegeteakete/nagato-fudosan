@@ -23,11 +23,15 @@ const NewsList: React.FC = () => {
     <div className="min-h-screen bg-white">
       <Navigation/>
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="mb-10">
-          <p className="text-xs text-green-700 font-semibold tracking-widest mb-2">STAFF BLOG</p>
-          <h1 className="text-3xl font-bold text-[#1a1a1a] mb-3">スタッフブログ</h1>
-          <div className="w-10 h-0.5 bg-green-700"/>
-          <p className="text-[#666] mt-4 text-sm">長門不動産スタッフが、物件情報や長門市の暮らしについてお届けします。</p>
+        <div className="mb-10 -mx-4">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">STAFF BLOG</p>
+              <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">スタッフブログ</h1>
+            </div>
+            <p className="text-sm text-gray-500 ml-auto hidden md:block">物件情報・長門市の暮らし情報</p>
+          </div>
         </div>
 
         {articles.length === 0 ? (

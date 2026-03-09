@@ -149,16 +149,14 @@ const FAQ = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
         {/* ヘッダー */}
-        <div className="text-center mb-12">
-          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">FAQ</p>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            よくある質問
-          </h1>
-          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            お客様からよくいただくご質問をまとめました。<br />
-            お探しの情報が見つからない場合は、お気軽にお問い合わせください。
-          </p>
+        <div className="mb-10 -mx-4">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">FAQ</p>
+              <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">よくある質問</h1>
+            </div>
+          </div>
         </div>
 
         {/* 検索バー */}

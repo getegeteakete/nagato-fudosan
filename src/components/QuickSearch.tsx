@@ -92,10 +92,14 @@ const QuickSearch = () => {
     <section className="py-12 bg-card/30 backdrop-blur-sm">
       <div className="container">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-1">QUICK SEARCH</p>
-            <h2 className="text-2xl md:text-3xl font-serif font-semibold">物件をクイック検索</h2>
-            <div className="w-12 h-1 bg-green-700 mx-auto mt-3 rounded-full"></div>
+          <div className="mb-8 -mx-4 md:-mx-6 lg:-mx-8">
+            <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+              <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+              <div>
+                <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">QUICK SEARCH</p>
+                <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">物件をクイック検索</h2>
+              </div>
+            </div>
           </div>
 
           <Tabs defaultValue="rental" className="w-full">

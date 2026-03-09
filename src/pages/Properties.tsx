@@ -75,11 +75,15 @@ const Properties: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">物件検索</h1>
-          <p className="text-gray-600">
-            {total > 0 ? `${total}件の物件が見つかりました` : '条件に合う物件を検索してください'}
-          </p>
+        <div className="mb-8 -mx-4">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">PROPERTIES</p>
+              <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">物件検索</h1>
+            </div>
+            <p className="text-sm text-gray-500 ml-auto">{total > 0 ? `${total}件の物件が見つかりました` : '条件に合う物件を検索してください'}</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

@@ -113,13 +113,15 @@ const FeaturedProperties = () => {
       <div className="container">
 
         {/* セクションタイトル */}
-        <div className="text-center mb-12 animate-fade-in">
-          <p className="text-green-700 font-semibold text-sm tracking-widest uppercase mb-2">PROPERTIES</p>
-          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-3 text-gray-900">
-            おすすめ物件
-          </h2>
-          <div className="w-16 h-1 bg-green-700 mx-auto mb-4 rounded-full"></div>
-          <p className="text-muted-foreground text-lg">長門市の最新・注目物件をご紹介</p>
+        <div className="mb-10 -mx-4 md:-mx-6 lg:-mx-8 animate-fade-in">
+          <div className="w-full bg-green-50 border-y border-green-100 py-4 px-6 flex items-center gap-4">
+            <div className="w-1.5 h-8 bg-green-700 rounded-full flex-shrink-0"/>
+            <div>
+              <p className="text-xs font-bold text-green-600 tracking-[0.2em] uppercase mb-0.5">PROPERTIES</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">おすすめ物件</h2>
+            </div>
+            <p className="text-sm text-gray-500 ml-auto hidden md:block">長門市の最新・注目物件をご紹介</p>
+          </div>
         </div>
 
         {/* 賃貸物件 */}
