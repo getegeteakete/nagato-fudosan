@@ -176,7 +176,26 @@ const AdminArticleGenerator: React.FC = () => {
     setGenerating(true); setResult(''); setError('');
 
     const prompt = statMode
-      ? `${STAFF_PERSONA}\n\n現在の物件掲載状況：賃貸 ${rentCount}件 / 売買 ${saleCount}件 / 合計 ${rentCount + saleCount}件\n\nサイトの掲載数お知らせブログ記事を書いてください。\n①タイトル（「おかげさまで〇〇件掲載中！」など） ②現在の掲載状況の紹介 ③長門市で物件を探している方へのメッセージ ④賃貸・売買それぞれのおすすめポイント ⑤お問い合わせ・来店のご案内（TEL: 0837-22-3321）\n文字数：300〜400文字。テンポよく親しみやすく。`
+      ? `${STAFF_PERSONA}
+
+現在の物件掲載状況：
+- 賃貸物件：${rentCount}件
+- 売買物件：${saleCount}件
+- 合計：${rentCount + saleCount}件
+
+「${rentCount + saleCount}件の物件を掲載しました！」というタイトルの物件掲載お知らせ記事を書いてください。
+
+【構成】
+1. タイトル：「新着物件を〇件掲載しました！」「〇件の物件情報を更新しました！」など具体的な件数入りのタイトル
+2. 導入文：今回の掲載・更新についての簡単な挨拶とお礼（2〜3文）
+3. 各物件カテゴリー別のご案内：
+   - 賃貸物件（${rentCount}件）についての概要とおすすめポイント
+   - 売買物件（${saleCount}件）についての概要とおすすめポイント
+4. どんな方におすすめか（ファミリー・単身・移住希望など具体的に）
+5. スタッフからのひとこと
+6. お問い合わせ先（TEL: 0837-22-3321、平日9〜18時、土日祝10〜17時）
+
+文字数：400〜500文字。不動産会社らしいお知らせ記事のトーンで、親しみやすく。`
       : buildPrompt(articleType, selectedProperties, extraNote);
 
     try {
@@ -254,7 +273,7 @@ const AdminArticleGenerator: React.FC = () => {
             <div className="flex gap-2">
               <button onClick={() => setStatMode(true)}
                 className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${statMode ? 'bg-[#8a6c3e] text-white border-[#8a6c3e]' : 'bg-white text-[#666] border-[#ddd5c8] hover:bg-[#f5f0e8]'}`}>
-                📊 掲載数お知らせ記事
+                📋 物件掲載お知らせ記事
               </button>
               <button onClick={() => setStatMode(false)}
                 className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium border transition-colors ${!statMode ? 'bg-[#8a6c3e] text-white border-[#8a6c3e]' : 'bg-white text-[#666] border-[#ddd5c8] hover:bg-[#f5f0e8]'}`}>

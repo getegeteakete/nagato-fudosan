@@ -12,7 +12,7 @@ const loadLS = <T,>(key: string, fb: T): T => {
 
 const ARTICLE_TYPE_LABELS: Record<string, string> = {
   intro: '物件紹介', sns_instagram: 'Instagram', sns_twitter: 'X/Twitter',
-  life: '生活情報', news: '新着お知らせ', stat: '掲載数お知らせ',
+  life: '生活情報', news: '新着お知らせ', stat: '物件掲載お知らせ',
 };
 
 // ─── 記事一覧ページ ───
