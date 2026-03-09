@@ -4,12 +4,11 @@ import { useFavorites } from '@/hooks/usePropertySearch';
 import { useNavigate, Link } from 'react-router-dom';
 import { PropertyCard } from '@/components/PropertyCard';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import AdminPropertyManager from '@/components/AdminPropertyManager';
 import {
   User, Heart, LogOut, Home, FileText, Calculator,
   ChevronRight, Menu, Building2, Bell, Users,
-  ClipboardList, Search, CheckCircle, Clock, AlertCircle,
-  Mail, Phone, Eye, X
+  ClipboardList, CheckCircle, Mail, Phone, Eye, X
 } from 'lucide-react';
 
 // ──────────── 型 ────────────
@@ -110,6 +109,7 @@ const AdminDashboard: React.FC<{ user: any }> = ({ user }) => {
 
   const ADMIN_NAV = [
     { id: 'overview',    icon: Home,          label: 'ダッシュボード', badge: 0 },
+    { id: 'properties',  icon: Building2,     label: '物件管理',       badge: 0 },
     { id: 'moveouts',    icon: ClipboardList, label: '退去申請受付',   badge: unreadMoveouts },
     { id: 'valuations',  icon: Calculator,    label: '査定依頼一覧',   badge: unreadValuations },
     { id: 'members',     icon: Users,         label: '会員一覧',       badge: 0 },
@@ -154,6 +154,9 @@ const AdminDashboard: React.FC<{ user: any }> = ({ user }) => {
 
   const renderContent = () => {
     switch (active) {
+
+      // ── 物件管理 ──
+      case 'properties': return <AdminPropertyManager />;
 
       // ── 概要 ──
       case 'overview': return (
