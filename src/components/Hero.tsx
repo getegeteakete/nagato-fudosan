@@ -18,8 +18,9 @@ const Hero = () => {
       >
         <source src="/hero-video.mp4" type="video/mp4" />
       </video>
-      {/* グラデーションオーバーレイ：左側を濃く、右側は透明 */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/20" />
+      {/* テキスト可読性のための下部グラデのみ残す */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
 
       {/* コンテンツ */}
       <div className="relative container h-full flex items-center">
@@ -33,13 +34,13 @@ const Hero = () => {
             <span className="text-white/70 text-xs">平日 9-18時 / 土日祝 10-17時</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold mb-4 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold mb-4 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
             住まい探しを、<br />もっと美しく。
           </h1>
-          <p className="text-lg md:text-xl text-white mb-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] font-medium">
+          <p className="text-lg md:text-xl text-white mb-2 drop-shadow-[0_2px_8px_rgba(0,0,0,1)] font-bold">
             賃貸・売買・売却・入居サポートをワンストップで。
           </p>
-          <p className="text-sm text-white/80 mb-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+          <p className="text-sm text-white mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,1)] font-semibold">
             おかげさまで地元・長門市に根付いて48年
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -60,7 +61,7 @@ const Hero = () => {
       </div>
 
       {/* 営業時間インフォバー（下部） */}
-      <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm">
+      <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-sm">
         <div className="container py-2.5 flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-white/90">
           <div className="flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 text-green-400" />
