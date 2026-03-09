@@ -3,6 +3,7 @@ import Navigation from "./Navigation";
 import Footer from "./Footer";
 import ScrollToTopButton from "./ScrollToTopButton";
 import FixedSideButtons from "./FixedSideButtons";
+import ChatBot from "./ChatBot";
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,6 +19,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Footer />
       <ScrollToTopButton />
       <FixedSideButtons />
+      <ChatBot />
     </div>
   );
 };
