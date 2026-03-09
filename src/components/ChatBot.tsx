@@ -125,28 +125,44 @@ const ChatBot: React.FC = () => {
     setInput('');
     setLoading(true);
 
-    if (!apiKey) {
-      setMessages([...newMessages, { role: 'assistant', content: 'AIチャットを使うにはAPIキーの設定が必要です。管理画面の「AIキー設定」から設定してください。' }]);
-      setLoading(false);
-      return;
-    }
+    const localKey = localStorage.getItem(API_KEY_KEY) || '';
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      // まずサーバープロキシ経由（環境変数のキー）を試みる
+      const payload = {
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 600,
+        system: SYSTEM_PROMPT,
+        messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+      };
+
+      let res: Response;
+      // サーバー経由でトライ
+      res = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 600,
-          system: SYSTEM_PROMPT,
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
+
+      // サーバーにキーがない場合はlocalStorageキーで直接呼ぶ
+      if (!res.ok && res.status === 500) {
+        if (!localKey) {
+          setMessages([...newMessages, { role: 'assistant', content: '管理画面の「AI記事生成」→「APIキー設定」でAnthropicのAPIキーを設定してください。' }]);
+          setLoading(false);
+          return;
+        }
+        res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': localKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify(payload),
+        });
+      }
+
       const data = await res.json();
       const reply = data.content?.[0]?.text || '申し訳ありません、少し問題が発生しました。お電話（0837-22-3321）かメールでお問い合わせください。';
       setMessages([...newMessages, { role: 'assistant', content: reply }]);

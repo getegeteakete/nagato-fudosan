@@ -199,16 +199,29 @@ const AdminArticleGenerator: React.FC = () => {
       : buildPrompt(articleType, selectedProperties, extraNote);
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const payload = { model: 'claude-opus-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] };
+
+      // サーバープロキシ経由でトライ
+      let res = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({ model: 'claude-opus-4-6', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
+
+      // サーバーにキーがない場合はローカルキーで直接呼ぶ
+      if (!res.ok && res.status === 500) {
+        res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify(payload),
+        });
+      }
+
       if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `API Error ${res.status}`); }
       const data = await res.json();
       setResult(data.content?.[0]?.text || '');
