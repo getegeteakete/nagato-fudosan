@@ -172,7 +172,38 @@ ${data.notes || 'なし'}
   }
 
   return (
-    <Card className="max-w-2xl mx-auto" ref={formTopRef as any}>
+    <div>
+      {/* ── ヒーローセクション ── */}
+      <div className="relative w-full overflow-hidden" style={{ maxHeight: '480px' }}>
+        <img
+          src="/valuation-hero.png"
+          alt="売却査定・物件紹介の流れ"
+          className="w-full object-cover object-center"
+          style={{ maxHeight: '480px' }}
+        />
+        {/* グラデーションオーバーレイ */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+        {/* テキスト */}
+        <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16">
+          <p className="text-green-300 text-xs md:text-sm font-bold tracking-[0.2em] uppercase mb-2 drop-shadow">Valuation & Consultation</p>
+          <h1 className="text-white text-2xl md:text-4xl font-bold leading-snug drop-shadow-lg mb-3">
+            売却査定・<br className="md:hidden" />お気軽にご相談を
+          </h1>
+          <p className="text-white/90 text-sm md:text-base max-w-md drop-shadow leading-relaxed">
+            長門不動産では物件の無料査定を承っております。<br />
+            まずはお気軽にお問い合わせください。
+          </p>
+          <div className="flex items-center gap-3 mt-5">
+            <span className="bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-full">無料査定</span>
+            <span className="bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">オンライン対応</span>
+            <span className="bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">秘密厳守</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── フォーム ── */}
+      <div className="py-12 px-4">
+        <Card className="max-w-2xl mx-auto" ref={formTopRef as any}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Calculator className="h-6 w-6 text-green-700" />
@@ -351,7 +382,9 @@ ${data.notes || 'なし'}
           </div>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+      </div>
+    </div>
   );
 };
 
