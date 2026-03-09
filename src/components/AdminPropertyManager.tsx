@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { PROPERTIES } from '@/data/properties';
 import { Property } from '@/types/database';
 import {
   Eye, EyeOff, Trash2, Edit2, Send, X, Check, Search,
   Building2, ExternalLink, Mail, User,
-  CheckSquare, Square, Plus, Image as ImageIcon, ChevronRight
+  CheckSquare, Square, Plus, ChevronRight,
+  Upload, Download, AlertCircle, CheckCircle2, FileText
 } from 'lucide-react';
 
 // ─── localStorage helpers ───
@@ -17,6 +18,87 @@ type Overrides = Record<string, Override>;
 
 const load = <T,>(key: string, fallback: T): T => { try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : fallback; } catch { return fallback; } };
 const save = (key: string, val: unknown) => localStorage.setItem(key, JSON.stringify(val));
+
+// ─── CSV ───
+const CSV_HEADERS = ['type','propertyType','title','address','area','rooms','floor','totalFloors','age','price','rent','managementFee','deposit','keyMoney','station','walkingTime','features','images','description'];
+const CSV_TEMPLATE = CSV_HEADERS.join(',') + '\n' +
+  'rent,apartment,賃貸　アパート サンプル,山口県長門市東深川123,30,2,1,2,10,0,45000,3000,1,0,JR長門市駅,10,エアコン|室内洗濯機置き場,https://example.com/img.jpg,サンプル物件です\n' +
+  'sale,house,売買　一戸建て サンプル,山口県長門市仙崎456,80,4,1,2,25,8000000,0,0,0,0,,0,駐車場あり|ペット可能,https://example.com/img2.jpg,日当たり良好な物件';
+
+const downloadTemplate = () => {
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + CSV_TEMPLATE], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = '長門不動産_物件登録テンプレート.csv'; a.click();
+};
+
+type CsvRow = { ok: boolean; row: number; data?: Property; errors: string[] };
+
+const parseCSV = (text: string): CsvRow[] => {
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
+  if (lines.length < 2) return [];
+  const header = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  const results: CsvRow[] = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    // CSVのカンマ分割（クォート対応）
+    const cols: string[] = [];
+    let cur = ''; let inQ = false;
+    for (const ch of lines[i]) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    cols.push(cur.trim());
+
+    const get = (field: string) => {
+      const idx = header.indexOf(field);
+      return idx >= 0 ? (cols[idx] || '').replace(/^"|"$/g, '').trim() : '';
+    };
+
+    const errors: string[] = [];
+    const type = get('type');
+    const propertyType = get('propertyType');
+    const title = get('title');
+    const address = get('address');
+    const area = parseFloat(get('area')) || 0;
+    const price = parseInt(get('price')) || 0;
+    const rent  = parseInt(get('rent'))  || 0;
+
+    if (!['rent','sale'].includes(type)) errors.push(`type が無効 (rent/sale)`);
+    if (!['apartment','house','land','office'].includes(propertyType)) errors.push(`propertyType が無効 (apartment/house/land/office)`);
+    if (!title) errors.push('title は必須');
+    if (!address) errors.push('address は必須');
+    if (area <= 0) errors.push('area は0より大きい値');
+    if (type === 'rent' && rent <= 0) errors.push('賃貸の場合 rent は必須');
+    if (type === 'sale' && price <= 0) errors.push('売買の場合 price は必須');
+
+    const prop: Property = {
+      id: `csv_${Date.now()}_${i}`,
+      title, address, description: get('description'),
+      type: type as 'rent' | 'sale',
+      propertyType: propertyType as Property['propertyType'],
+      price: type === 'sale' ? price : rent,
+      rent: type === 'rent' ? rent : undefined,
+      managementFee: parseInt(get('managementFee')) || 0,
+      deposit: parseInt(get('deposit')) || 0,
+      keyMoney: parseInt(get('keyMoney')) || 0,
+      area, rooms: parseInt(get('rooms')) || 1,
+      floor: parseInt(get('floor')) || 1,
+      totalFloors: parseInt(get('totalFloors')) || 1,
+      age: parseInt(get('age')) || 0,
+      prefecture: '山口県', city: '長門市',
+      station: get('station'), walkingTime: parseInt(get('walkingTime')) || 0,
+      features: get('features') ? get('features').split('|').map(f => f.trim()).filter(Boolean) : [],
+      images: get('images') ? get('images').split('|').map(u => u.trim()).filter(Boolean) : [],
+      isAvailable: true, isNew: true,
+      createdAt: new Date(), updatedAt: new Date(), createdBy: 'admin',
+    };
+    results.push({ ok: errors.length === 0, row: i, data: prop, errors });
+  }
+  return results;
+};
 
 // ─── 空物件フォーム ───
 const emptyForm = (): Partial<Property> & { imageUrlInput?: string } => ({
@@ -120,12 +202,35 @@ const AdminPropertyManager: React.FC = () => {
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
   // モーダル状態
-  const [mode, setMode] = useState<null | 'add' | 'edit'>(null);
+  const [mode, setMode] = useState<null | 'add' | 'edit' | 'csv'>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm());
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [showSend, setShowSend] = useState(false);
   const [sendForm, setSendForm] = useState({ name: '', email: '' });
+  const [csvRows, setCsvRows] = useState<CsvRow[]>([]);
+  const [csvImported, setCsvImported] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCsvFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const text = ev.target?.result as string;
+      setCsvRows(parseCSV(text));
+      setCsvImported(false);
+    };
+    reader.readAsText(file, 'UTF-8');
+    e.target.value = '';
+  };
+
+  const handleCsvImport = () => {
+    const valid = csvRows.filter(r => r.ok && r.data);
+    if (valid.length === 0) return;
+    const next = [...customProps, ...valid.map(r => r.data!)];
+    setCustomProps(next); save(CUSTOM_KEY, next);
+    setCsvImported(true);
+  };
 
   // 全物件（マスター＋カスタム、削除済み除外）
   const allProperties: Property[] = useMemo(() => {
@@ -283,13 +388,17 @@ const AdminPropertyManager: React.FC = () => {
           <h2 className="text-lg font-bold text-[#3d2e1e]">物件データ管理</h2>
           <span className="text-xs bg-[#f5f0e8] text-[#8a6c3e] border border-[#c8a96e] px-2 py-0.5 rounded-full">賃貸 {rentCount}件 ／ 売買 {saleCount}件</span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {checked.size > 0 && (
             <button onClick={() => setShowSend(true)}
               className="flex items-center gap-2 bg-green-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-800 transition-colors">
               <Send className="h-4 w-4"/>選択 {checked.size}件を紹介メール送信
             </button>
           )}
+          <button onClick={() => { setCsvRows([]); setCsvImported(false); setMode('csv'); }}
+            className="flex items-center gap-2 bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors">
+            <Upload className="h-4 w-4"/>CSV一括登録
+          </button>
           <button onClick={openAdd}
             className="flex items-center gap-2 bg-[#8a6c3e] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#6e5430] transition-colors">
             <Plus className="h-4 w-4"/>新規物件を登録
@@ -487,6 +596,120 @@ const AdminPropertyManager: React.FC = () => {
                 className="flex-1 bg-[#8a6c3e] text-white rounded-lg py-2.5 text-sm font-bold hover:bg-[#6e5430] disabled:opacity-40 flex items-center justify-center gap-2">
                 <Check className="h-4 w-4"/>{mode==='add' ? '登録する' : '保存する'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CSV一括登録モーダル */}
+      {mode === 'csv' && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl my-4">
+            <div className="flex items-center justify-between p-5 border-b border-[#ede8e0]">
+              <div className="flex items-center gap-2">
+                <Upload className="h-5 w-5 text-blue-600"/>
+                <h3 className="font-bold text-[#3d2e1e]">CSV一括登録</h3>
+              </div>
+              <button onClick={() => setMode(null)} className="text-[#999] hover:text-[#3d2e1e]"><X className="h-5 w-5"/></button>
+            </div>
+
+            <div className="p-5 space-y-5">
+              {/* テンプレートDL */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <FileText className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5"/>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-blue-800 mb-1">まずはテンプレートをダウンロード</p>
+                    <p className="text-xs text-blue-600 mb-3">CSVの列順・フォーマットを確認してください。featuresとimagesは <code className="bg-blue-100 px-1 rounded">|</code> で区切って複数指定できます。</p>
+                    <div className="bg-white border border-blue-200 rounded p-2 mb-3 overflow-x-auto">
+                      <code className="text-xs text-[#555] whitespace-nowrap">
+                        {CSV_HEADERS.join(' , ')}
+                      </code>
+                    </div>
+                    <button onClick={downloadTemplate}
+                      className="flex items-center gap-2 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      <Download className="h-4 w-4"/>テンプレートCSVをダウンロード
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ファイル選択 */}
+              <div>
+                <Label>CSVファイルを選択（UTF-8 または BOM付きUTF-8）</Label>
+                <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={handleCsvFile} className="hidden"/>
+                <button onClick={() => fileInputRef.current?.click()}
+                  className="w-full border-2 border-dashed border-[#c8a96e] rounded-lg py-8 text-center hover:bg-[#faf7f2] transition-colors">
+                  <Upload className="h-8 w-8 text-[#c8a96e] mx-auto mb-2"/>
+                  <p className="text-sm font-medium text-[#8a6c3e]">クリックしてCSVファイルを選択</p>
+                  <p className="text-xs text-[#999] mt-1">.csv ファイル対応</p>
+                </button>
+              </div>
+
+              {/* 解析結果 */}
+              {csvRows.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <p className="text-sm font-bold text-[#3d2e1e]">解析結果：{csvRows.length}行</p>
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                      成功 {csvRows.filter(r=>r.ok).length}件
+                    </span>
+                    {csvRows.filter(r=>!r.ok).length > 0 && (
+                      <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                        エラー {csvRows.filter(r=>!r.ok).length}件
+                      </span>
+                    )}
+                  </div>
+                  <div className="border border-[#ddd5c8] rounded-lg overflow-hidden max-h-64 overflow-y-auto">
+                    {csvRows.map((row, idx) => (
+                      <div key={idx} className={`flex items-start gap-3 px-4 py-2.5 border-b border-[#f0ebe3] text-sm ${row.ok ? '' : 'bg-red-50'}`}>
+                        <div className="flex-shrink-0 mt-0.5">
+                          {row.ok
+                            ? <CheckCircle2 className="h-4 w-4 text-green-600"/>
+                            : <AlertCircle className="h-4 w-4 text-red-500"/>}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-[#999]">{row.row}行目</span>
+                            {row.data && <span className="text-[#3d2e1e] font-medium truncate">{row.data.title}</span>}
+                            {row.data && (
+                              <span className={`text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 ${row.data.type==='rent' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                                {row.data.type==='rent' ? '賃貸' : '売買'}
+                              </span>
+                            )}
+                          </div>
+                          {row.errors.length > 0 && (
+                            <p className="text-xs text-red-600 mt-0.5">{row.errors.join(' / ')}</p>
+                          )}
+                          {row.data && row.ok && (
+                            <p className="text-xs text-[#999] mt-0.5">
+                              {row.data.address} / {row.data.area}㎡
+                              {row.data.type==='rent' ? ` / ¥${(row.data.rent||0).toLocaleString()}/月` : ` / ¥${row.data.price.toLocaleString()}`}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {!csvImported ? (
+                    <button onClick={handleCsvImport} disabled={csvRows.filter(r=>r.ok).length === 0}
+                      className="mt-4 w-full bg-blue-700 text-white rounded-lg py-3 text-sm font-bold hover:bg-blue-800 disabled:opacity-40 flex items-center justify-center gap-2 transition-colors">
+                      <Upload className="h-4 w-4"/>
+                      成功した {csvRows.filter(r=>r.ok).length}件 を登録する
+                    </button>
+                  ) : (
+                    <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0"/>
+                      <div>
+                        <p className="text-sm font-bold text-green-800">{csvRows.filter(r=>r.ok).length}件の物件を登録しました</p>
+                        <p className="text-xs text-green-600">物件管理一覧に反映されました</p>
+                      </div>
+                      <button onClick={() => setMode(null)} className="ml-auto text-sm bg-green-600 text-white px-4 py-1.5 rounded-lg hover:bg-green-700">閉じる</button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
