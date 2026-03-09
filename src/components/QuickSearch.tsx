@@ -40,15 +40,15 @@ const SALE_PRICES = [
 
 const PROPERTY_TYPES_RENTAL = [
   { value: "apartment", label: "アパート" },
-  { value: "house", label: "一戸建て" },
   { value: "mansion", label: "マンション" },
-  { value: "warehouse", label: "倉庫" },
+  { value: "house", label: "一戸建て" },
+  { value: "office", label: "倉庫・事務所" },
 ];
 const PROPERTY_TYPES_SALE = [
-  { value: "apartment", label: "アパート" },
   { value: "house", label: "一戸建て" },
+  { value: "land", label: "土地" },
+  { value: "office", label: "倉庫・事務所" },
   { value: "mansion", label: "マンション" },
-  { value: "warehouse", label: "倉庫" },
 ];
 
 const AGES = [

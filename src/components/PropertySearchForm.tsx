@@ -52,9 +52,10 @@ const NAGATO_AREAS = [
 ];
 
 const PROPERTY_TYPES = [
-  { value: 'apartment', label: 'マンション' },
+  { value: 'apartment', label: 'アパート' },
+  { value: 'mansion', label: 'マンション' },
   { value: 'house', label: '戸建て' },
-  { value: 'office', label: 'オフィス' },
+  { value: 'office', label: '倉庫・事務所' },
   { value: 'land', label: '土地' },
 ];
 

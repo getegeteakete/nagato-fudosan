@@ -67,7 +67,7 @@ const parseCSV = (text: string): CsvRow[] => {
     const rent  = parseInt(get('rent'))  || 0;
 
     if (!['rent','sale'].includes(type)) errors.push(`type が無効 (rent/sale)`);
-    if (!['apartment','house','land','office'].includes(propertyType)) errors.push(`propertyType が無効 (apartment/house/land/office)`);
+    if (!['apartment','mansion','house','land','office'].includes(propertyType)) errors.push(`propertyType が無効 (apartment/mansion/house/land/office)`);
     if (!title) errors.push('title は必須');
     if (!address) errors.push('address は必須');
     if (area <= 0) errors.push('area は0より大きい値');
@@ -167,7 +167,9 @@ const PropertyRow = ({ property, override, checked, onCheck, onToggleHide, onDel
           {property.type==='rent' ? '賃貸' : '売買'}
         </span>
       </td>
-      <td className="px-3 py-2.5 text-xs text-[#666]">{property.propertyType}</td>
+      <td className="px-3 py-2.5 text-xs text-[#666]">
+        {({'apartment':'アパート','mansion':'マンション','house':'一戸建て','land':'土地','office':'倉庫・事務所'} as Record<string,string>)[property.propertyType] || property.propertyType}
+      </td>
       <td className="px-3 py-2.5 text-xs font-bold text-[#8a6c3e]">{priceStr}</td>
       <td className="px-3 py-2.5 text-xs text-[#666]">{property.area}㎡</td>
       <td className="px-3 py-2.5">
@@ -511,7 +513,8 @@ const AdminPropertyManager: React.FC = () => {
                 <div>
                   <Label>タイプ *</Label>
                   <Select value={form.propertyType} onChange={e => f('propertyType', e.target.value)}>
-                    <option value="apartment">アパート・マンション</option>
+                    <option value="apartment">アパート</option>
+                    <option value="mansion">マンション</option>
                     <option value="house">一戸建て</option>
                     <option value="land">土地</option>
                     <option value="office">倉庫・事務所</option>

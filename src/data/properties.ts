@@ -707,7 +707,7 @@ export const PROPERTIES: Property[] = [
     title: '賃貸　マンション',
     description: '東深川駅前にある賃貸　マンション。2DK・45.16m²の物件です。月額4万円。',
     type: 'rent',
-    propertyType: 'apartment',
+    propertyType: 'mansion',
     price: 45000,
     rent: 45000,
     managementFee: 4570,

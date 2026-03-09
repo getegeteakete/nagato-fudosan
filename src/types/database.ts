@@ -5,7 +5,7 @@ export interface Property {
   title: string;
   description: string;
   type: 'rent' | 'sale'; // 賃貸 or 売買
-  propertyType: 'apartment' | 'house' | 'office' | 'land'; // 物件種別
+  propertyType: 'apartment' | 'mansion' | 'house' | 'office' | 'land'; // 物件種別
   price: number;
   rent?: number; // 賃料（賃貸の場合）
   managementFee?: number; // 管理費

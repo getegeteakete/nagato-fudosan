@@ -48,9 +48,10 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
 
   const getPropertyTypeLabel = (type: string) => {
     const types: Record<string, string> = {
-      apartment: 'マンション',
+      apartment: 'アパート',
+      mansion: 'マンション',
       house: '戸建て',
-      office: 'オフィス',
+      office: '倉庫・事務所',
       land: '土地',
     };
     return types[type] || type;
