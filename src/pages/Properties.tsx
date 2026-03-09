@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Grid, List, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 type ViewMode = 'grid' | 'list';
 type SortOption = 'price_asc' | 'price_desc' | 'area_asc' | 'area_desc' | 'newest' | 'oldest';
@@ -23,7 +23,25 @@ const SORT_OPTIONS = [
   { value: 'area_desc', label: '面積の大きい順' },
 ];
 
+// URLパラメータから初期検索条件を生成
+const buildInitialCriteria = (params: URLSearchParams): SearchCriteria => {
+  const criteria: SearchCriteria = {};
+  const type = params.get('type');
+  if (type === 'rental') criteria.type = 'rent';
+  if (type === 'sale') criteria.type = 'sale';
+  const propertyType = params.get('propertyType');
+  if (propertyType) criteria.propertyType = [propertyType];
+  const area = params.get('area');
+  if (area && area !== 'all') criteria.city = area;
+  const maxPrice = params.get('maxPrice');
+  if (maxPrice) criteria.maxPrice = Number(maxPrice);
+  const maxAge = params.get('maxAge');
+  if (maxAge) criteria.maxAge = Number(maxAge);
+  return criteria;
+};
+
 const Properties: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showFilters, setShowFilters] = useState(false);
@@ -42,6 +60,7 @@ const Properties: React.FC = () => {
     goToPage,
   } = usePropertySearch({
     limit: 30,
+    initialCriteria: buildInitialCriteria(searchParams),
   });
 
   const handleSearch = (criteria: SearchCriteria) => {
